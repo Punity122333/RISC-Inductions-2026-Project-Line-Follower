@@ -1,0 +1,115 @@
+[0.000000] (-) TimerEvent: {}
+[0.000705] (line_follower_py) JobQueued: {'identifier': 'line_follower_py', 'dependencies': OrderedDict()}
+[0.001184] (line_follower_py) JobStarted: {'identifier': 'line_follower_py'}
+[0.101919] (-) TimerEvent: {}
+[0.207039] (-) TimerEvent: {}
+[0.311919] (-) TimerEvent: {}
+[0.416785] (-) TimerEvent: {}
+[0.521802] (-) TimerEvent: {}
+[0.626701] (-) TimerEvent: {}
+[0.731601] (-) TimerEvent: {}
+[0.836344] (-) TimerEvent: {}
+[0.940629] (-) TimerEvent: {}
+[1.045349] (-) TimerEvent: {}
+[1.150063] (-) TimerEvent: {}
+[1.254501] (-) TimerEvent: {}
+[1.359441] (-) TimerEvent: {}
+[1.464215] (-) TimerEvent: {}
+[1.568868] (-) TimerEvent: {}
+[1.673181] (-) TimerEvent: {}
+[1.777901] (-) TimerEvent: {}
+[1.881806] (-) TimerEvent: {}
+[1.986761] (-) TimerEvent: {}
+[2.090453] (-) TimerEvent: {}
+[2.195068] (-) TimerEvent: {}
+[2.298943] (-) TimerEvent: {}
+[2.403562] (-) TimerEvent: {}
+[2.508218] (-) TimerEvent: {}
+[2.612940] (-) TimerEvent: {}
+[2.717789] (-) TimerEvent: {}
+[2.822627] (-) TimerEvent: {}
+[2.927294] (-) TimerEvent: {}
+[3.031867] (-) TimerEvent: {}
+[3.136514] (-) TimerEvent: {}
+[3.241097] (-) TimerEvent: {}
+[3.346160] (-) TimerEvent: {}
+[3.450919] (-) TimerEvent: {}
+[3.554929] (-) TimerEvent: {}
+[3.563731] (line_follower_py) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/build', '--no-deps', 'symlink_data'], 'cwd': '/mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'MESA_D3D12_DEFAULT_ADAPTER_NAME': 'NVIDIA', 'GZ_SIM_RESOURCE_PATH': '/opt/ros/jazzy/share', 'USER': 'pxnity', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/pxnity', 'OLDPWD': '/mnt/c/Users/parth/LineFollowerAssets', 'ROS_PYTHON_VERSION': '3', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'WSL_DISTRO_NAME': 'Ubuntu-24.04', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'pxnity', 'NAME': 'WIN-LO5188REMAH', 'WSL_INTEROP': '/run/WSL/350_interop', 'PULSE_SERVER': 'unix:/mnt/wslg/PulseServer', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm-256color', 'PATH': '/home/pxnity/.local/bin:/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/usr/lib/linux-tools/6.18.54.1-microsoft-standard-WSL2/bin:/mnt/c/Program Files/WindowsApps/MicrosoftCorporationII.WindowsSubsystemForLinux_3.0.3.0_x64__8wekyb3d8bbwe:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR:/mnt/c/Program Files/Cloudflare/Cloudflare WARP/:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files/nodejs/:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/MinGW/bin:/mnt/c/Program Files/WSL/:/mnt/c/Users/parth/AppData/Local/Programs/Python/Python313/Scripts/:/mnt/c/Users/parth/AppData/Local/Programs/Python/Python313/:/mnt/c/Users/parth/.local/bin:/mnt/c/Users/parth/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/parth/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Users/parth/AppData/Roaming/npm:/mnt/c/MinGW/bin:/mnt/c/Users/parth/AppData/Local/Programs/Microsoft VS Code/bin/copilot-shim:/snap/bin', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'C.UTF-8', 'PERF_EXEC_PATH': '/usr/lib/linux-tools/6.18.54.1-microsoft-standard-WSL2/libexec/perf-core', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'SHELL': '/bin/bash', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'GALLIUM_DRIVER': 'd3d12', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/lib/python3.12/site-packages:/mnt/c/users/parth/LineFollowerAssets/build/line_follower_py:/mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/lib/python3.12/site-packages:/home/pxnity/line_follower_ws/build/linebot_rl_train:/home/pxnity/line_follower_ws/install/linebot_rl_train/lib/python3.12/site-packages:/home/pxnity/line_follower_ws/build/linebot_grader:/home/pxnity/line_follower_ws/install/linebot_grader/lib/python3.12/site-packages:/home/pxnity/line_follower_ws/build/linebot_control:/home/pxnity/line_follower_ws/install/linebot_control/lib/python3.12/site-packages:/mnt/c/Users/parth/RISCInductions/build/line_follower_py:/mnt/c/Users/parth/RISCInductions/install/line_follower_py/lib/python3.12/site-packages:/opt/ros/jazzy/opt/gz_sim_vendor/lib/python:/opt/ros/jazzy/opt/sdformat_vendor/lib/python:/opt/ros/jazzy/opt/gz_transport_vendor/lib/python:/opt/ros/jazzy/opt/gz_msgs_vendor/lib/python:/opt/ros/jazzy/opt/gz_math_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'WSL2_GUI_APPS_ENABLED': '1', 'HOSTTYPE': 'x86_64', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor', 'WSLENV': ''}), 'shell': False}
+[3.657755] (-) TimerEvent: {}
+[3.762644] (-) TimerEvent: {}
+[3.866724] (-) TimerEvent: {}
+[3.971500] (-) TimerEvent: {}
+[4.076261] (-) TimerEvent: {}
+[4.181093] (-) TimerEvent: {}
+[4.285411] (-) TimerEvent: {}
+[4.390312] (-) TimerEvent: {}
+[4.495296] (-) TimerEvent: {}
+[4.599538] (-) TimerEvent: {}
+[4.704271] (-) TimerEvent: {}
+[4.807975] (-) TimerEvent: {}
+[4.814138] (line_follower_py) StdoutLine: {'line': b'running develop\n'}
+[4.910858] (-) TimerEvent: {}
+[5.014857] (-) TimerEvent: {}
+[5.118833] (-) TimerEvent: {}
+[5.158270] (line_follower_py) StdoutLine: {'line': b'running egg_info\n'}
+[5.179486] (line_follower_py) StdoutLine: {'line': b'creating line_follower_py.egg-info\n'}
+[5.181108] (line_follower_py) StdoutLine: {'line': b'writing line_follower_py.egg-info/PKG-INFO\n'}
+[5.188713] (line_follower_py) StdoutLine: {'line': b'writing dependency_links to line_follower_py.egg-info/dependency_links.txt\n'}
+[5.190744] (line_follower_py) StdoutLine: {'line': b'writing entry points to line_follower_py.egg-info/entry_points.txt\n'}
+[5.192932] (line_follower_py) StdoutLine: {'line': b'writing requirements to line_follower_py.egg-info/requires.txt\n'}
+[5.194431] (line_follower_py) StdoutLine: {'line': b'writing top-level names to line_follower_py.egg-info/top_level.txt\n'}
+[5.196983] (line_follower_py) StdoutLine: {'line': b"writing manifest file 'line_follower_py.egg-info/SOURCES.txt'\n"}
+[5.219091] (-) TimerEvent: {}
+[5.322658] (-) TimerEvent: {}
+[5.362418] (line_follower_py) StdoutLine: {'line': b"reading manifest file 'line_follower_py.egg-info/SOURCES.txt'\n"}
+[5.424617] (-) TimerEvent: {}
+[5.436530] (line_follower_py) StdoutLine: {'line': b"writing manifest file 'line_follower_py.egg-info/SOURCES.txt'\n"}
+[5.475077] (line_follower_py) StdoutLine: {'line': b'running build_ext\n'}
+[5.476291] (line_follower_py) StdoutLine: {'line': b'Creating /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/lib/python3.12/site-packages/line-follower-py.egg-link (link to .)\n'}
+[5.487399] (line_follower_py) StdoutLine: {'line': b'Installing gazebo_line_sim script to /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/lib/line_follower_py\n'}
+[5.495525] (line_follower_py) StdoutLine: {'line': b'Installing line_detector script to /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/lib/line_follower_py\n'}
+[5.505053] (line_follower_py) StdoutLine: {'line': b'Installing track_publisher script to /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/lib/line_follower_py\n'}
+[5.515643] (line_follower_py) StdoutLine: {'line': b'\n'}
+[5.516754] (line_follower_py) StdoutLine: {'line': b'Installed /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py\n'}
+[5.518047] (line_follower_py) StdoutLine: {'line': b'running symlink_data\n'}
+[5.520906] (line_follower_py) StdoutLine: {'line': b'creating /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/ament_index/resource_index/packages\n'}
+[5.524764] (-) TimerEvent: {}
+[5.535026] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/resource/line_follower_py -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/ament_index/resource_index/packages\n'}
+[5.546274] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/package.xml -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py\n'}
+[5.550286] (line_follower_py) StdoutLine: {'line': b'creating /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/launch\n'}
+[5.558151] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/launch/assets_only.launch.py -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/launch\n'}
+[5.567424] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/launch/sim_config.rviz -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/launch\n'}
+[5.572093] (line_follower_py) StdoutLine: {'line': b'creating /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/urdf\n'}
+[5.580056] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/urdf/chassis.stl -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/urdf\n'}
+[5.590143] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/urdf/robot.stl -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/urdf\n'}
+[5.599425] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/urdf/robot.urdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/urdf\n'}
+[5.608653] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/urdf/wheel.stl -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/urdf\n'}
+[5.613104] (line_follower_py) StdoutLine: {'line': b'creating /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.620753] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/circle_0_5.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.624916] (-) TimerEvent: {}
+[5.630370] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/circle_1_0.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.639963] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/circle_2_5.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.649172] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/final_grading.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.660445] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/hexagon.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.670263] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/hexagon_0_5.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.679118] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/hexagon_1_0.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.688260] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/line.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.697382] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/loop0.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.706212] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/loop1.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.715152] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/monza.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.723920] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/redbull.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.725110] (-) TimerEvent: {}
+[5.733541] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/s_loop_open.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.742478] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/square.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.751775] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/square_2_5.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.761640] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/track_world.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.770603] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/triangle.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds\n'}
+[5.774792] (line_follower_py) StdoutLine: {'line': b'creating /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/meshes\n'}
+[5.783004] (line_follower_py) StdoutLine: {'line': b'symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/meshes/final_grading.stl -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/meshes\n'}
+[5.806912] (line_follower_py) CommandEnded: {'returncode': 0}
+[5.825301] (-) TimerEvent: {}
+[5.929995] (-) TimerEvent: {}
+[6.034695] (-) TimerEvent: {}
+[6.100834] (line_follower_py) JobEnded: {'identifier': 'line_follower_py', 'rc': 0}
+[6.106979] (-) EventReactorShutdown: {}

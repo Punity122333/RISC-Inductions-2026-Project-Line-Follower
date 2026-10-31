@@ -1,0 +1,4 @@
+[console_scripts]
+gazebo_line_sim = line_follower_py.gazebo_line_sim:main
+line_detector = line_follower_py.line_detector:main
+track_publisher = line_follower_py.track_publisher:main

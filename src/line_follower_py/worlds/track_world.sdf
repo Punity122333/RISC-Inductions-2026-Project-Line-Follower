@@ -1,0 +1,175 @@
+<!-- FILE: src/line_follower_py/worlds/track_world.sdf -->
+
+<sdf version="1.9">
+  <world name="line_track">
+
+    <!-- Physics -->
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- Required Gazebo systems -->
+    <plugin
+      filename="gz-sim-physics-system"
+      name="gz::sim::systems::Physics">
+    </plugin>
+
+    <plugin
+      filename="gz-sim-user-commands-system"
+      name="gz::sim::systems::UserCommands">
+    </plugin>
+
+    <plugin
+      filename="gz-sim-scene-broadcaster-system"
+      name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+
+    <!-- Camera rendering -->
+    <plugin
+      filename="gz-sim-sensors-system"
+      name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+
+    <!-- Ground plane -->
+    <model name="ground_plane">
+      <static>true</static>
+
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
+
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>50</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
+
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+
+          <cast_shadows>false</cast_shadows>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Lighting -->
+    <!-- Shadows off: the robot's own shadow looks like a line to the camera. -->
+    <light type="directional" name="sun">
+      <cast_shadows>false</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!--
+      EQUILATERAL TRIANGLE TRACK
+
+      Side length: 3.0 m
+      Line width: 22 mm
+      Track centerline vertices:
+
+        A = (0.000000000, 0.000000000)
+        B = (3.000000000, 0.000000000)
+        C = (1.500000000, 2.598076211)
+
+      The AB base is exactly horizontal.
+      The robot starts at A, facing along +X.
+
+      All track segments are visual-only. They have no collision geometry.
+      The slight segment extension ensures the corners join without gaps.
+    -->
+
+    <model name="triangle_track_line">
+      <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
+
+      <link name="triangle_track_link">
+
+        <!-- Side AB: A -> B, heading 0 degrees -->
+        <visual name="side_ab">
+          <pose>1.500 0.0 0.001 0 0 0</pose>
+
+          <geometry>
+            <box>
+              <size>3.022 0.022 0.002</size>
+            </box>
+          </geometry>
+
+          <material>
+            <ambient>0.025 0.025 0.025 1</ambient>
+            <diffuse>0.025 0.025 0.025 1</diffuse>
+            <specular>0 0 0 1</specular>
+          </material>
+
+          <cast_shadows>false</cast_shadows>
+        </visual>
+
+        <!-- Side BC: B -> C, heading 120 degrees -->
+        <visual name="side_bc">
+          <pose>
+            2.250 1.299038106 0.001 0 0 2.094395102393195
+          </pose>
+
+          <geometry>
+            <box>
+              <size>3.022 0.022 0.002</size>
+            </box>
+          </geometry>
+
+          <material>
+            <ambient>0.025 0.025 0.025 1</ambient>
+            <diffuse>0.025 0.025 0.025 1</diffuse>
+            <specular>0 0 0 1</specular>
+          </material>
+
+          <cast_shadows>false</cast_shadows>
+        </visual>
+
+        <!-- Side CA: C -> A, heading -120 degrees -->
+        <visual name="side_ca">
+          <pose>
+            0.750 1.299038106 0.001 0 0 -2.094395102393195
+          </pose>
+
+          <geometry>
+            <box>
+              <size>3.022 0.022 0.002</size>
+            </box>
+          </geometry>
+
+          <material>
+            <ambient>0.025 0.025 0.025 1</ambient>
+            <diffuse>0.025 0.025 0.025 1</diffuse>
+            <specular>0 0 0 1</specular>
+          </material>
+
+          <cast_shadows>false</cast_shadows>
+        </visual>
+
+      </link>
+    </model>
+  </world>
+</sdf>

@@ -1,0 +1,648 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="line_follower_redbull">
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal><size>21 21</size></plane></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>21 21</size></plane></geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- TRACK_POLYLINE closed=1 width=0.03
+      0.00000 -0.00000
+      0.15050 0.00000
+      0.30439 0.00215
+      0.45972 0.00524
+      0.61451 0.00806
+      0.76679 0.00939
+      0.91458 0.00801
+      1.05592 0.00272
+      1.18882 -0.00770
+      1.31133 -0.02447
+      1.42146 -0.04880
+      1.52146 -0.07520
+      1.61461 -0.09937
+      1.70053 -0.12429
+      1.77881 -0.15294
+      1.84905 -0.18830
+      1.91085 -0.23336
+      1.96382 -0.29110
+      2.00755 -0.36450
+      2.04166 -0.45655
+      2.06573 -0.57021
+      2.07686 -0.71013
+      2.07386 -0.87578
+      2.05889 -1.06241
+      2.03409 -1.26528
+      2.00163 -1.47967
+      1.96366 -1.70082
+      1.92235 -1.92399
+      1.87985 -2.14445
+      1.83831 -2.35746
+      1.79989 -2.55828
+      1.76154 -2.75314
+      1.71930 -2.95042
+      1.67402 -3.14860
+      1.62655 -3.34616
+      1.57773 -3.54157
+      1.52841 -3.73330
+      1.47944 -3.91984
+      1.43166 -4.09964
+      1.38591 -4.27120
+      1.34304 -4.43298
+      1.30336 -4.58982
+      1.26618 -4.74597
+      1.23082 -4.89906
+      1.19658 -5.04672
+      1.16280 -5.18659
+      1.12880 -5.31629
+      1.09389 -5.43345
+      1.05740 -5.53571
+      1.01865 -5.62069
+      0.97695 -5.68602
+      0.93797 -5.73035
+      0.90557 -5.75540
+      0.87635 -5.76338
+      0.84690 -5.75650
+      0.81383 -5.73699
+      0.77373 -5.70704
+      0.72321 -5.66888
+      0.65886 -5.62473
+      0.57729 -5.57679
+      0.47509 -5.52727
+      0.35106 -5.47150
+      0.20807 -5.40458
+      0.04879 -5.32839
+      -0.12407 -5.24483
+      -0.30783 -5.15579
+      -0.49980 -5.06318
+      -0.69729 -4.96888
+      -0.89760 -4.87480
+      -1.09805 -4.78282
+      -1.29594 -4.69483
+      -1.50442 -4.60790
+      -1.73358 -4.51841
+      -1.97615 -4.42728
+      -2.22487 -4.33542
+      -2.47246 -4.24376
+      -2.71167 -4.15319
+      -2.93523 -4.06464
+      -3.13587 -3.97902
+      -3.30632 -3.89725
+      -3.43933 -3.82024
+      -3.53485 -3.74690
+      -3.60040 -3.67569
+      -3.64004 -3.60683
+      -3.65783 -3.54052
+      -3.65784 -3.47698
+      -3.64411 -3.41642
+      -3.62072 -3.35905
+      -3.59172 -3.30509
+      -3.56117 -3.25475
+      -3.53313 -3.20825
+      -3.50672 -3.16553
+      -3.47722 -3.12635
+      -3.44297 -3.09062
+      -3.40232 -3.05826
+      -3.35360 -3.02918
+      -3.29515 -3.00328
+      -3.22531 -2.98050
+      -3.14241 -2.96072
+      -3.04481 -2.94388
+      -2.93083 -2.92988
+      -2.79201 -2.92133
+      -2.62537 -2.91978
+      -2.43748 -2.92352
+      -2.23490 -2.93087
+      -2.02420 -2.94015
+      -1.81195 -2.94964
+      -1.60471 -2.95768
+      -1.40904 -2.96256
+      -1.23152 -2.96259
+      -1.07872 -2.95608
+      -0.94617 -2.94617
+      -0.82460 -2.93633
+      -0.71333 -2.92544
+      -0.61167 -2.91233
+      -0.51895 -2.89587
+      -0.43448 -2.87490
+      -0.35759 -2.84829
+      -0.28760 -2.81488
+      -0.22382 -2.77353
+      -0.16558 -2.72310
+      -0.11282 -2.66033
+      -0.06624 -2.58463
+      -0.02623 -2.49879
+      0.00679 -2.40560
+      0.03241 -2.30786
+      0.05023 -2.20837
+      0.05984 -2.10994
+      0.06083 -2.01534
+      0.05279 -1.92739
+      0.03532 -1.84888
+      0.00729 -1.77617
+      -0.03149 -1.70433
+      -0.08005 -1.63423
+      -0.13741 -1.56676
+      -0.20261 -1.50279
+      -0.27468 -1.44318
+      -0.35264 -1.38882
+      -0.43553 -1.34057
+      -0.52236 -1.29933
+      -0.61218 -1.26594
+      -0.70702 -1.24254
+      -0.80904 -1.22939
+      -0.91741 -1.22459
+      -1.03129 -1.22624
+      -1.14988 -1.23247
+      -1.27233 -1.24136
+      -1.39783 -1.25103
+      -1.52554 -1.25958
+      -1.65465 -1.26512
+      -1.78432 -1.26575
+      -1.92204 -1.26592
+      -2.07281 -1.27003
+      -2.23211 -1.27620
+      -2.39542 -1.28252
+      -2.55820 -1.28708
+      -2.71592 -1.28798
+      -2.86407 -1.28333
+      -2.99812 -1.27121
+      -3.11353 -1.24972
+      -3.20578 -1.21696
+      -3.27635 -1.17050
+      -3.33077 -1.11099
+      -3.37056 -1.04108
+      -3.39724 -0.96346
+      -3.41234 -0.88078
+      -3.41739 -0.79573
+      -3.41391 -0.71097
+      -3.40343 -0.62917
+      -3.38747 -0.55301
+      -3.36756 -0.48515
+      -3.34195 -0.42168
+      -3.30811 -0.35766
+      -3.26635 -0.29421
+      -3.21696 -0.23246
+      -3.16028 -0.17353
+      -3.09660 -0.11855
+      -3.02623 -0.06866
+      -2.94950 -0.02496
+      -2.86671 0.01140
+      -2.77816 0.03930
+      -2.68207 0.05672
+      -2.57709 0.06367
+      -2.46427 0.06216
+      -2.34464 0.05415
+      -2.21921 0.04164
+      -2.08902 0.02660
+      -1.95511 0.01102
+      -1.81849 -0.00313
+      -1.68020 -0.01385
+      -1.54127 -0.01918
+      -1.39893 -0.02010
+      -1.25058 -0.01923
+      -1.09749 -0.01699
+      -0.94093 -0.01384
+      -0.78217 -0.01019
+      -0.62249 -0.00650
+      -0.46316 -0.00320
+      -0.30546 -0.00073
+      -0.15064 0.00049
+    -->
+    <model name="redbull_track">
+      <static>true</static>
+      <link name="line">
+        <pose>0 0 0.001 0 0 0</pose>
+        <visual name="s0"><pose>0.07525 0.00000 0 0 0 0.00000</pose><geometry><box><size>0.15250 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c0"><pose>0.00000 -0.00000 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s1"><pose>0.22744 0.00108 0 0 0 0.01399</pose><geometry><box><size>0.15591 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c1"><pose>0.15050 0.00000 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s2"><pose>0.38206 0.00370 0 0 0 0.01990</pose><geometry><box><size>0.15736 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c2"><pose>0.30439 0.00215 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s3"><pose>0.53712 0.00665 0 0 0 0.01819</pose><geometry><box><size>0.15682 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c3"><pose>0.45972 0.00524 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s4"><pose>0.69065 0.00872 0 0 0 0.00872</pose><geometry><box><size>0.15428 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c4"><pose>0.61451 0.00806 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s5"><pose>0.84069 0.00870 0 0 0 -0.00931</pose><geometry><box><size>0.14980 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c5"><pose>0.76679 0.00939 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s6"><pose>0.98525 0.00537 0 0 0 -0.03743</pose><geometry><box><size>0.14343 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c6"><pose>0.91458 0.00801 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s7"><pose>1.12237 -0.00249 0 0 0 -0.07827</pose><geometry><box><size>0.13531 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c7"><pose>1.05592 0.00272 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s8"><pose>1.25007 -0.01609 0 0 0 -0.13603</pose><geometry><box><size>0.12565 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c8"><pose>1.18882 -0.00770 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s9"><pose>1.36639 -0.03664 0 0 0 -0.21740</pose><geometry><box><size>0.11479 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c9"><pose>1.31133 -0.02447 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s10"><pose>1.47146 -0.06200 0 0 0 -0.25812</pose><geometry><box><size>0.10542 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c10"><pose>1.42146 -0.04880 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s11"><pose>1.56803 -0.08728 0 0 0 -0.25384</pose><geometry><box><size>0.09824 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c11"><pose>1.52146 -0.07520 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s12"><pose>1.65757 -0.11183 0 0 0 -0.28229</pose><geometry><box><size>0.09146 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c12"><pose>1.61461 -0.09937 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s13"><pose>1.73967 -0.13861 0 0 0 -0.35087</pose><geometry><box><size>0.08536 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c13"><pose>1.70053 -0.12429 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s14"><pose>1.81393 -0.17062 0 0 0 -0.46643</pose><geometry><box><size>0.08064 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c14"><pose>1.77881 -0.15294 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s15"><pose>1.87995 -0.21083 0 0 0 -0.62999</pose><geometry><box><size>0.07849 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c15"><pose>1.84905 -0.18830 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s16"><pose>1.93734 -0.26223 0 0 0 -0.82847</pose><geometry><box><size>0.08036 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c16"><pose>1.91085 -0.23336 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s17"><pose>1.98569 -0.32780 0 0 0 -1.03344</pose><geometry><box><size>0.08744 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c17"><pose>1.96382 -0.29110 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s18"><pose>2.02460 -0.41053 0 0 0 -1.21598</pose><geometry><box><size>0.10016 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c18"><pose>2.00755 -0.36450 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s19"><pose>2.05369 -0.51338 0 0 0 -1.36212</pose><geometry><box><size>0.11819 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c19"><pose>2.04166 -0.45655 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s20"><pose>2.07129 -0.64017 0 0 0 -1.49138</pose><geometry><box><size>0.14236 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c20"><pose>2.06573 -0.57021 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s21"><pose>2.07536 -0.79295 0 0 0 -1.58890</pose><geometry><box><size>0.16767 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c21"><pose>2.07686 -0.71013 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s22"><pose>2.06637 -0.96909 0 0 0 -1.65087</pose><geometry><box><size>0.18923 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c22"><pose>2.07386 -0.87578 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s23"><pose>2.04649 -1.16384 0 0 0 -1.69242</pose><geometry><box><size>0.20639 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c23"><pose>2.05889 -1.06241 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s24"><pose>2.01786 -1.37247 0 0 0 -1.72106</pose><geometry><box><size>0.21883 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c24"><pose>2.03409 -1.26528 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s25"><pose>1.98265 -1.59024 0 0 0 -1.74081</pose><geometry><box><size>0.22638 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c25"><pose>2.00163 -1.47967 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s26"><pose>1.94301 -1.81240 0 0 0 -1.75384</pose><geometry><box><size>0.22897 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c26"><pose>1.96366 -1.70082 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s27"><pose>1.90110 -2.03422 0 0 0 -1.76126</pose><geometry><box><size>0.22652 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c27"><pose>1.92235 -1.92399 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s28"><pose>1.85908 -2.25096 0 0 0 -1.76339</pose><geometry><box><size>0.21902 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c28"><pose>1.87985 -2.14445 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s29"><pose>1.81910 -2.45787 0 0 0 -1.75981</pose><geometry><box><size>0.20646 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c29"><pose>1.83831 -2.35746 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s30"><pose>1.78071 -2.65571 0 0 0 -1.76516</pose><geometry><box><size>0.20060 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c30"><pose>1.79989 -2.55828 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s31"><pose>1.74042 -2.85178 0 0 0 -1.78172</pose><geometry><box><size>0.20376 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c31"><pose>1.76154 -2.75314 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s32"><pose>1.69666 -3.04951 0 0 0 -1.79540</pose><geometry><box><size>0.20529 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c32"><pose>1.71930 -2.95042 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s33"><pose>1.65028 -3.24738 0 0 0 -1.80661</pose><geometry><box><size>0.20518 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c33"><pose>1.67402 -3.14860 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s34"><pose>1.60214 -3.44387 0 0 0 -1.81560</pose><geometry><box><size>0.20341 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c34"><pose>1.62655 -3.34616 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s35"><pose>1.55307 -3.63744 0 0 0 -1.82256</pose><geometry><box><size>0.19997 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c35"><pose>1.57773 -3.54157 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s36"><pose>1.50393 -3.82657 0 0 0 -1.82755</pose><geometry><box><size>0.19485 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c36"><pose>1.52841 -3.73330 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s37"><pose>1.45555 -4.00974 0 0 0 -1.83054</pose><geometry><box><size>0.18805 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c37"><pose>1.47944 -3.91984 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s38"><pose>1.40878 -4.18542 0 0 0 -1.83140</pose><geometry><box><size>0.17955 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c38"><pose>1.43166 -4.09964 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s39"><pose>1.36447 -4.35209 0 0 0 -1.82982</pose><geometry><box><size>0.16937 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c39"><pose>1.38591 -4.27120 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s40"><pose>1.32320 -4.51140 0 0 0 -1.81857</pose><geometry><box><size>0.16377 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c40"><pose>1.34304 -4.43298 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s41"><pose>1.28477 -4.66789 0 0 0 -1.80456</pose><geometry><box><size>0.16251 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c41"><pose>1.30336 -4.58982 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s42"><pose>1.24850 -4.82251 0 0 0 -1.79783</pose><geometry><box><size>0.15912 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c42"><pose>1.26618 -4.74597 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s43"><pose>1.21370 -4.97289 0 0 0 -1.79860</pose><geometry><box><size>0.15358 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c43"><pose>1.23082 -4.89906 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s44"><pose>1.17969 -5.11666 0 0 0 -1.80776</pose><geometry><box><size>0.14589 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c44"><pose>1.19658 -5.04672 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s45"><pose>1.14580 -5.25144 0 0 0 -1.82719</pose><geometry><box><size>0.13608 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c45"><pose>1.16280 -5.18659 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s46"><pose>1.11135 -5.37487 0 0 0 -1.86036</pose><geometry><box><size>0.12425 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c46"><pose>1.12880 -5.31629 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s47"><pose>1.07565 -5.48458 0 0 0 -1.91358</pose><geometry><box><size>0.11057 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c47"><pose>1.09389 -5.43345 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s48"><pose>1.03802 -5.57820 0 0 0 -1.99869</pose><geometry><box><size>0.09540 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c48"><pose>1.05740 -5.53571 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s49"><pose>0.99780 -5.65335 0 0 0 -2.13890</pose><geometry><box><size>0.07950 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c49"><pose>1.01865 -5.62069 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s50"><pose>0.95746 -5.70818 0 0 0 -2.29197</pose><geometry><box><size>0.06103 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c50"><pose>0.97695 -5.68602 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s51"><pose>0.92177 -5.74287 0 0 0 -2.48344</pose><geometry><box><size>0.04295 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c51"><pose>0.93797 -5.73035 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s52"><pose>0.89096 -5.75939 0 0 0 -2.87502</pose><geometry><box><size>0.03229 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c52"><pose>0.90557 -5.75540 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s53"><pose>0.86162 -5.75994 0 0 0 2.91222</pose><geometry><box><size>0.03224 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c53"><pose>0.87635 -5.76338 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s54"><pose>0.83036 -5.74675 0 0 0 2.60846</pose><geometry><box><size>0.04040 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c54"><pose>0.84690 -5.75650 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s55"><pose>0.79378 -5.72201 0 0 0 2.50014</pose><geometry><box><size>0.05204 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c55"><pose>0.81383 -5.73699 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s56"><pose>0.74847 -5.68796 0 0 0 2.49473</pose><geometry><box><size>0.06531 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c56"><pose>0.77373 -5.70704 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s57"><pose>0.69103 -5.64681 0 0 0 2.54017</pose><geometry><box><size>0.08004 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c57"><pose>0.72321 -5.66888 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s58"><pose>0.61807 -5.60076 0 0 0 2.61026</pose><geometry><box><size>0.09662 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c58"><pose>0.65886 -5.62473 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s59"><pose>0.52619 -5.55203 0 0 0 2.69045</pose><geometry><box><size>0.11556 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c59"><pose>0.57729 -5.57679 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s60"><pose>0.41308 -5.49939 0 0 0 2.71902</pose><geometry><box><size>0.13799 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c60"><pose>0.47509 -5.52727 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s61"><pose>0.27956 -5.43804 0 0 0 2.70384</pose><geometry><box><size>0.15988 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c61"><pose>0.35106 -5.47150 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s62"><pose>0.12843 -5.36648 0 0 0 2.69541</pose><geometry><box><size>0.17856 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c62"><pose>0.20807 -5.40458 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s63"><pose>-0.03764 -5.28661 0 0 0 2.69133</pose><geometry><box><size>0.19400 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c63"><pose>0.04879 -5.32839 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s64"><pose>-0.21595 -5.20031 0 0 0 2.69042</pose><geometry><box><size>0.20619 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c64"><pose>-0.12407 -5.24483 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s65"><pose>-0.40382 -5.10949 0 0 0 2.69210</pose><geometry><box><size>0.21514 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c65"><pose>-0.30783 -5.15579 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s66"><pose>-0.59854 -5.01603 0 0 0 2.69612</pose><geometry><box><size>0.22084 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c66"><pose>-0.49980 -5.06318 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s67"><pose>-0.79744 -4.92184 0 0 0 2.70248</pose><geometry><box><size>0.22331 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c67"><pose>-0.69729 -4.96888 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s68"><pose>-0.99782 -4.82881 0 0 0 2.71138</pose><geometry><box><size>0.22255 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c68"><pose>-0.89760 -4.87480 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s69"><pose>-1.19699 -4.73882 0 0 0 2.72324</pose><geometry><box><size>0.21857 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c69"><pose>-1.09805 -4.78282 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s70"><pose>-1.40018 -4.65137 0 0 0 2.74653</pose><geometry><box><size>0.22788 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c70"><pose>-1.29594 -4.69483 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s71"><pose>-1.61900 -4.56315 0 0 0 2.76929</pose><geometry><box><size>0.24801 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c71"><pose>-1.50442 -4.60790 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s72"><pose>-1.85487 -4.47285 0 0 0 2.78222</pose><geometry><box><size>0.26112 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c72"><pose>-1.73358 -4.51841 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s73"><pose>-2.10051 -4.38135 0 0 0 2.78781</pose><geometry><box><size>0.26714 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c73"><pose>-1.97615 -4.42728 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s74"><pose>-2.34866 -4.28959 0 0 0 2.78701</pose><geometry><box><size>0.26602 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c74"><pose>-2.22487 -4.33542 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s75"><pose>-2.59207 -4.19847 0 0 0 2.77967</pose><geometry><box><size>0.25778 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c75"><pose>-2.47246 -4.24376 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s76"><pose>-2.82345 -4.10892 0 0 0 2.76446</pose><geometry><box><size>0.24246 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c76"><pose>-2.71167 -4.15319 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s77"><pose>-3.03555 -4.02183 0 0 0 2.73826</pose><geometry><box><size>0.22014 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c77"><pose>-2.93523 -4.06464 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s78"><pose>-3.22110 -3.93814 0 0 0 2.69429</pose><geometry><box><size>0.19106 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c78"><pose>-3.13587 -3.97902 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s79"><pose>-3.37283 -3.85874 0 0 0 2.61674</pose><geometry><box><size>0.15569 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c79"><pose>-3.30632 -3.89725 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s80"><pose>-3.48709 -3.78357 0 0 0 2.48683</pose><geometry><box><size>0.12243 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c80"><pose>-3.43933 -3.82024 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s81"><pose>-3.56763 -3.71130 0 0 0 2.31486</pose><geometry><box><size>0.09878 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c81"><pose>-3.53485 -3.74690 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s82"><pose>-3.62022 -3.64126 0 0 0 2.09311</pose><geometry><box><size>0.08146 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c82"><pose>-3.60040 -3.67569 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s83"><pose>-3.64894 -3.57368 0 0 0 1.83293</pose><geometry><box><size>0.07066 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c83"><pose>-3.64004 -3.60683 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s84"><pose>-3.65784 -3.50875 0 0 0 1.57084</pose><geometry><box><size>0.06554 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c84"><pose>-3.65783 -3.54052 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s85"><pose>-3.65097 -3.44670 0 0 0 1.34792</pose><geometry><box><size>0.06410 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c85"><pose>-3.65784 -3.47698 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s86"><pose>-3.63241 -3.38773 0 0 0 1.18359</pose><geometry><box><size>0.06395 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c86"><pose>-3.64411 -3.41642 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s87"><pose>-3.60622 -3.33207 0 0 0 1.07762</pose><geometry><box><size>0.06326 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c87"><pose>-3.62072 -3.35905 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s88"><pose>-3.57644 -3.27992 0 0 0 1.02535</pose><geometry><box><size>0.06088 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c88"><pose>-3.59172 -3.30509 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s89"><pose>-3.54715 -3.23150 0 0 0 1.02829</pose><geometry><box><size>0.05630 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c89"><pose>-3.56117 -3.25475 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s90"><pose>-3.51992 -3.18689 0 0 0 1.01701</pose><geometry><box><size>0.05223 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c90"><pose>-3.53313 -3.20825 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s91"><pose>-3.49197 -3.14594 0 0 0 0.92542</pose><geometry><box><size>0.05104 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c91"><pose>-3.50672 -3.16553 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s92"><pose>-3.46010 -3.10849 0 0 0 0.80657</pose><geometry><box><size>0.05149 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c92"><pose>-3.47722 -3.12635 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s93"><pose>-3.42265 -3.07444 0 0 0 0.67233</pose><geometry><box><size>0.05396 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c93"><pose>-3.44297 -3.09062 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s94"><pose>-3.37796 -3.04372 0 0 0 0.53816</pose><geometry><box><size>0.05874 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c94"><pose>-3.40232 -3.05826 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s95"><pose>-3.32437 -3.01623 0 0 0 0.41700</pose><geometry><box><size>0.06593 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c95"><pose>-3.35360 -3.02918 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s96"><pose>-3.26023 -2.99189 0 0 0 0.31540</pose><geometry><box><size>0.07547 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c96"><pose>-3.29515 -3.00328 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s97"><pose>-3.18386 -2.97061 0 0 0 0.23415</pose><geometry><box><size>0.08722 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c97"><pose>-3.22531 -2.98050 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s98"><pose>-3.09361 -2.95230 0 0 0 0.17087</pose><geometry><box><size>0.10105 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c98"><pose>-3.14241 -2.96072 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s99"><pose>-2.98782 -2.93688 0 0 0 0.12222</pose><geometry><box><size>0.11684 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c99"><pose>-3.04481 -2.94388 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s100"><pose>-2.86142 -2.92561 0 0 0 0.06150</pose><geometry><box><size>0.14108 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c100"><pose>-2.93083 -2.92988 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s101"><pose>-2.70869 -2.92055 0 0 0 0.00934</pose><geometry><box><size>0.16865 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c101"><pose>-2.79201 -2.92133 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s102"><pose>-2.53142 -2.92165 0 0 0 -0.01993</pose><geometry><box><size>0.18993 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c102"><pose>-2.62537 -2.91978 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s103"><pose>-2.33619 -2.92720 0 0 0 -0.03628</pose><geometry><box><size>0.20471 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c103"><pose>-2.43748 -2.92352 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s104"><pose>-2.12955 -2.93551 0 0 0 -0.04398</pose><geometry><box><size>0.21290 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c104"><pose>-2.23490 -2.93087 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s105"><pose>-1.91807 -2.94490 0 0 0 -0.04472</pose><geometry><box><size>0.21447 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c105"><pose>-2.02420 -2.94015 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s106"><pose>-1.70833 -2.95366 0 0 0 -0.03875</pose><geometry><box><size>0.20940 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c106"><pose>-1.81195 -2.94964 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s107"><pose>-1.50687 -2.96012 0 0 0 -0.02493</pose><geometry><box><size>0.19772 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c107"><pose>-1.60471 -2.95768 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s108"><pose>-1.32028 -2.96257 0 0 0 -0.00018</pose><geometry><box><size>0.17952 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c108"><pose>-1.40904 -2.96256 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s109"><pose>-1.15512 -2.95934 0 0 0 0.04255</pose><geometry><box><size>0.15495 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c109"><pose>-1.23152 -2.96259 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s110"><pose>-1.01244 -2.95113 0 0 0 0.07467</pose><geometry><box><size>0.13492 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c110"><pose>-1.07872 -2.95608 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s111"><pose>-0.88538 -2.94125 0 0 0 0.08071</pose><geometry><box><size>0.12397 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c111"><pose>-0.94617 -2.94617 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s112"><pose>-0.76896 -2.93089 0 0 0 0.09762</pose><geometry><box><size>0.11381 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c112"><pose>-0.82460 -2.93633 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s113"><pose>-0.66250 -2.91888 0 0 0 0.12823</pose><geometry><box><size>0.10450 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c113"><pose>-0.71333 -2.92544 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s114"><pose>-0.56531 -2.90410 0 0 0 0.17572</pose><geometry><box><size>0.09617 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c114"><pose>-0.61167 -2.91233 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s115"><pose>-0.47671 -2.88538 0 0 0 0.24329</pose><geometry><box><size>0.08903 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c115"><pose>-0.51895 -2.89587 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s116"><pose>-0.39604 -2.86159 0 0 0 0.33322</pose><geometry><box><size>0.08337 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c116"><pose>-0.43448 -2.87490 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s117"><pose>-0.32259 -2.83158 0 0 0 0.44532</pose><geometry><box><size>0.07956 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c117"><pose>-0.35759 -2.84829 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s118"><pose>-0.25571 -2.79421 0 0 0 0.57519</pose><geometry><box><size>0.07801 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c118"><pose>-0.28760 -2.81488 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s119"><pose>-0.19470 -2.74831 0 0 0 0.71368</pose><geometry><box><size>0.07904 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c119"><pose>-0.22382 -2.77353 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s120"><pose>-0.13920 -2.69172 0 0 0 0.87183</pose><geometry><box><size>0.08399 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c120"><pose>-0.16558 -2.72310 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s121"><pose>-0.08953 -2.62248 0 0 0 1.01916</pose><geometry><box><size>0.09089 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c121"><pose>-0.11282 -2.66033 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s122"><pose>-0.04624 -2.54171 0 0 0 1.13470</pose><geometry><box><size>0.09671 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c122"><pose>-0.06624 -2.58463 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s123"><pose>-0.00972 -2.45219 0 0 0 1.23027</pose><geometry><box><size>0.10087 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c123"><pose>-0.02623 -2.49879 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s124"><pose>0.01960 -2.35673 0 0 0 1.31439</pose><geometry><box><size>0.10304 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c124"><pose>0.00679 -2.40560 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s125"><pose>0.04132 -2.25812 0 0 0 1.39354</pose><geometry><box><size>0.10307 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c125"><pose>0.03241 -2.30786 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s126"><pose>0.05504 -2.15915 0 0 0 1.47348</pose><geometry><box><size>0.10091 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c126"><pose>0.05023 -2.20837 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s127"><pose>0.06034 -2.06264 0 0 0 1.56033</pose><geometry><box><size>0.09660 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c127"><pose>0.05984 -2.10994 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s128"><pose>0.05681 -1.97137 0 0 0 1.66194</pose><geometry><box><size>0.09032 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c128"><pose>0.06083 -2.01534 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s129"><pose>0.04406 -1.88814 0 0 0 1.78981</pose><geometry><box><size>0.08243 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c129"><pose>0.05279 -1.92739 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s130"><pose>0.02130 -1.81252 0 0 0 1.93872</pose><geometry><box><size>0.07993 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c130"><pose>0.03532 -1.84888 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s131"><pose>-0.01210 -1.74025 0 0 0 2.06577</pose><geometry><box><size>0.08364 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c131"><pose>0.00729 -1.77617 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s132"><pose>-0.05577 -1.66928 0 0 0 2.17665</pose><geometry><box><size>0.08727 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c132"><pose>-0.03149 -1.70433 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s133"><pose>-0.10873 -1.60050 0 0 0 2.27541</pose><geometry><box><size>0.09056 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c133"><pose>-0.08005 -1.63423 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s134"><pose>-0.17001 -1.53477 0 0 0 2.36568</pose><geometry><box><size>0.09335 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c134"><pose>-0.13741 -1.56676 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s135"><pose>-0.23865 -1.47298 0 0 0 2.45055</pose><geometry><box><size>0.09552 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c135"><pose>-0.20261 -1.50279 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s136"><pose>-0.31366 -1.41600 0 0 0 2.53269</pose><geometry><box><size>0.09704 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c136"><pose>-0.27468 -1.44318 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s137"><pose>-0.39409 -1.36470 0 0 0 2.61447</pose><geometry><box><size>0.09790 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c137"><pose>-0.35264 -1.38882 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s138"><pose>-0.47895 -1.31995 0 0 0 2.69812</pose><geometry><box><size>0.09813 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c138"><pose>-0.43553 -1.34057 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s139"><pose>-0.56727 -1.28263 0 0 0 2.78575</pose><geometry><box><size>0.09782 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c139"><pose>-0.52236 -1.29933 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s140"><pose>-0.65960 -1.25424 0 0 0 2.89969</pose><geometry><box><size>0.09969 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c140"><pose>-0.61218 -1.26594 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s141"><pose>-0.75803 -1.23596 0 0 0 3.01336</pose><geometry><box><size>0.10486 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c141"><pose>-0.70702 -1.24254 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s142"><pose>-0.86322 -1.22699 0 0 0 3.09731</pose><geometry><box><size>0.11047 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c142"><pose>-0.80904 -1.22939 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s143"><pose>-0.97435 -1.22541 0 0 0 -3.12704</pose><geometry><box><size>0.11590 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c143"><pose>-0.91741 -1.22459 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s144"><pose>-1.09059 -1.22935 0 0 0 -3.08917</pose><geometry><box><size>0.12075 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c144"><pose>-1.03129 -1.22624 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s145"><pose>-1.21110 -1.23691 0 0 0 -3.06910</pose><geometry><box><size>0.12478 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c145"><pose>-1.14988 -1.23247 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s146"><pose>-1.33508 -1.24619 0 0 0 -3.06470</pose><geometry><box><size>0.12787 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c146"><pose>-1.27233 -1.24136 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s147"><pose>-1.46168 -1.25530 0 0 0 -3.07473</pose><geometry><box><size>0.13000 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c147"><pose>-1.39783 -1.25103 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s148"><pose>-1.59009 -1.26235 0 0 0 -3.09871</pose><geometry><box><size>0.13123 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c148"><pose>-1.52554 -1.25958 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s149"><pose>-1.71948 -1.26544 0 0 0 -3.13670</pose><geometry><box><size>0.13167 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c149"><pose>-1.65465 -1.26512 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s150"><pose>-1.85318 -1.26584 0 0 0 -3.14041</pose><geometry><box><size>0.13972 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c150"><pose>-1.78432 -1.26575 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s151"><pose>-1.99742 -1.26798 0 0 0 -3.11429</pose><geometry><box><size>0.15283 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c151"><pose>-1.92204 -1.26592 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s152"><pose>-2.15246 -1.27312 0 0 0 -3.10289</pose><geometry><box><size>0.16142 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c152"><pose>-2.07281 -1.27003 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s153"><pose>-2.31376 -1.27936 0 0 0 -3.10293</pose><geometry><box><size>0.16543 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c153"><pose>-2.23211 -1.27620 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s154"><pose>-2.47681 -1.28480 0 0 0 -3.11357</pose><geometry><box><size>0.16484 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c154"><pose>-2.39542 -1.28252 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s155"><pose>-2.63706 -1.28753 0 0 0 -3.13586</pose><geometry><box><size>0.15973 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c155"><pose>-2.55820 -1.28708 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s156"><pose>-2.79000 -1.28566 0 0 0 3.11017</pose><geometry><box><size>0.15022 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c156"><pose>-2.71592 -1.28798 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s157"><pose>-2.93109 -1.27727 0 0 0 3.05141</pose><geometry><box><size>0.13659 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c157"><pose>-2.86407 -1.28333 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s158"><pose>-3.05582 -1.26046 0 0 0 2.95750</pose><geometry><box><size>0.11939 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c158"><pose>-2.99812 -1.27121 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s159"><pose>-3.15965 -1.23334 0 0 0 2.80036</pose><geometry><box><size>0.09989 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c159"><pose>-3.11353 -1.24972 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s160"><pose>-3.24106 -1.19373 0 0 0 2.55948</pose><geometry><box><size>0.08649 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c160"><pose>-3.20578 -1.21696 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s161"><pose>-3.30356 -1.14075 0 0 0 2.31150</pose><geometry><box><size>0.08264 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c161"><pose>-3.27635 -1.17050 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s162"><pose>-3.35066 -1.07604 0 0 0 2.08824</pose><geometry><box><size>0.08244 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c162"><pose>-3.33077 -1.11099 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s163"><pose>-3.38390 -1.00227 0 0 0 1.90188</pose><geometry><box><size>0.08408 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c163"><pose>-3.37056 -1.04108 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s164"><pose>-3.40479 -0.92212 0 0 0 1.75148</pose><geometry><box><size>0.08604 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c164"><pose>-3.39724 -0.96346 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s165"><pose>-3.41487 -0.83825 0 0 0 1.63009</pose><geometry><box><size>0.08720 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c165"><pose>-3.41234 -0.88078 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s166"><pose>-3.41565 -0.75335 0 0 0 1.52976</pose><geometry><box><size>0.08683 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c166"><pose>-3.41739 -0.79573 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s167"><pose>-3.40867 -0.67007 0 0 0 1.44333</pose><geometry><box><size>0.08447 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c167"><pose>-3.41391 -0.71097 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s168"><pose>-3.39545 -0.59109 0 0 0 1.36422</pose><geometry><box><size>0.07982 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c168"><pose>-3.40343 -0.62917 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s169"><pose>-3.37751 -0.51908 0 0 0 1.28535</pose><geometry><box><size>0.07272 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c169"><pose>-3.38747 -0.55301 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s170"><pose>-3.35475 -0.45342 0 0 0 1.18735</pose><geometry><box><size>0.07044 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c170"><pose>-3.36756 -0.48515 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s171"><pose>-3.32503 -0.38967 0 0 0 1.08455</pose><geometry><box><size>0.07442 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c171"><pose>-3.34195 -0.42168 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s172"><pose>-3.28723 -0.32594 0 0 0 0.98864</pose><geometry><box><size>0.07796 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c172"><pose>-3.30811 -0.35766 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s173"><pose>-3.24165 -0.26334 0 0 0 0.89625</pose><geometry><box><size>0.08107 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c173"><pose>-3.26635 -0.29421 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s174"><pose>-3.18862 -0.20299 0 0 0 0.80478</pose><geometry><box><size>0.08377 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c174"><pose>-3.21696 -0.23246 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s175"><pose>-3.12844 -0.14604 0 0 0 0.71218</pose><geometry><box><size>0.08613 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c175"><pose>-3.16028 -0.17353 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s176"><pose>-3.06142 -0.09360 0 0 0 0.61685</pose><geometry><box><size>0.08826 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c176"><pose>-3.09660 -0.11855 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s177"><pose>-2.98787 -0.04681 0 0 0 0.51763</pose><geometry><box><size>0.09030 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c177"><pose>-3.02623 -0.06866 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s178"><pose>-2.90810 -0.00678 0 0 0 0.41382</pose><geometry><box><size>0.09243 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c178"><pose>-2.94950 -0.02496 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s179"><pose>-2.82243 0.02535 0 0 0 0.30529</pose><geometry><box><size>0.09484 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c179"><pose>-2.86671 0.01140 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s180"><pose>-2.73012 0.04801 0 0 0 0.17924</pose><geometry><box><size>0.09966 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c180"><pose>-2.77816 0.03930 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s181"><pose>-2.62958 0.06019 0 0 0 0.06618</pose><geometry><box><size>0.10720 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c181"><pose>-2.68207 0.05672 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s182"><pose>-2.52068 0.06292 0 0 0 -0.01342</pose><geometry><box><size>0.11483 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c182"><pose>-2.57709 0.06367 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s183"><pose>-2.40446 0.05816 0 0 0 -0.06680</pose><geometry><box><size>0.12191 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c183"><pose>-2.46427 0.06216 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s184"><pose>-2.28192 0.04790 0 0 0 -0.09943</pose><geometry><box><size>0.12805 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c184"><pose>-2.34464 0.05415 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s185"><pose>-2.15412 0.03412 0 0 0 -0.11501</pose><geometry><box><size>0.13305 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c185"><pose>-2.21921 0.04164 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s186"><pose>-2.02207 0.01881 0 0 0 -0.11584</pose><geometry><box><size>0.13682 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c186"><pose>-2.08902 0.02660 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s187"><pose>-1.88680 0.00395 0 0 0 -0.10318</pose><geometry><box><size>0.13935 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c187"><pose>-1.95511 0.01102 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s188"><pose>-1.74935 -0.00849 0 0 0 -0.07741</pose><geometry><box><size>0.14070 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c188"><pose>-1.81849 -0.00313 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s189"><pose>-1.61074 -0.01652 0 0 0 -0.03832</pose><geometry><box><size>0.14103 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c189"><pose>-1.68020 -0.01385 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s190"><pose>-1.47010 -0.01964 0 0 0 -0.00647</pose><geometry><box><size>0.14434 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c190"><pose>-1.54127 -0.01918 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s191"><pose>-1.32476 -0.01966 0 0 0 0.00590</pose><geometry><box><size>0.15035 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c191"><pose>-1.39893 -0.02010 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s192"><pose>-1.17403 -0.01811 0 0 0 0.01459</pose><geometry><box><size>0.15511 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c192"><pose>-1.25058 -0.01923 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s193"><pose>-1.01921 -0.01541 0 0 0 0.02016</pose><geometry><box><size>0.15859 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c193"><pose>-1.09749 -0.01699 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s194"><pose>-0.86155 -0.01202 0 0 0 0.02293</pose><geometry><box><size>0.16080 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c194"><pose>-0.94093 -0.01384 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s195"><pose>-0.70233 -0.00835 0 0 0 0.02310</pose><geometry><box><size>0.16172 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c195"><pose>-0.78217 -0.01019 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s196"><pose>-0.54283 -0.00485 0 0 0 0.02072</pose><geometry><box><size>0.16136 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c196"><pose>-0.62249 -0.00650 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s197"><pose>-0.38431 -0.00197 0 0 0 0.01570</pose><geometry><box><size>0.15973 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c197"><pose>-0.46316 -0.00320 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s198"><pose>-0.22805 -0.00012 0 0 0 0.00784</pose><geometry><box><size>0.15682 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c198"><pose>-0.30546 -0.00073 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="s199"><pose>-0.07532 0.00024 0 0 0 -0.00322</pose><geometry><box><size>0.15265 0.03000 0.002</size></box></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+        <visual name="c199"><pose>-0.15064 0.00049 0 0 0 0</pose><geometry><cylinder><radius>0.01500</radius><length>0.002</length></cylinder></geometry><material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material></visual>
+      </link>
+    </model>
+  </world>
+</sdf>

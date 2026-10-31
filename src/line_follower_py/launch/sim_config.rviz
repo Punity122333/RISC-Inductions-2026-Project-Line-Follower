@@ -1,0 +1,138 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+    PropertyTree:
+      Expanded:
+        - /Status1
+        - /RobotModel1
+        - /TF1
+        - /Marker1
+      SplitterRatio: 0.5
+    Help Height: 78
+    Name: Displays
+    Saved Config: {}
+    SplitterProportion: 0.5
+    TreeModel:
+      Columns:
+        - Active
+        - Description
+        - Name
+      Expanded:
+        - /Status1
+        - /RobotModel1
+        - /TF1/Frames1/All Enabled1
+        - /Marker1/Topic1
+      Hidden: []
+      Name: Displays
+      TopLevel Classes:
+        - rviz_common/Status
+        - rviz_default_plugins/RobotModel
+        - rviz_default_plugins/TF
+        - rviz_default_plugins/Marker
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_description
+      Enabled: true
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: RobotModel
+      Visual Enabled: true
+    - Alpha: 1
+      Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: true
+        odom:
+          Value: true
+        base_link:
+          Value: true
+        left_wheel:
+          Value: true
+        right_wheel:
+          Value: true
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Update Interval: 0.1
+      Value: TF
+    - Alpha: 1
+      Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: Marker
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /line_track
+      Value: Marker
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Default Light: true
+    Fixed Frame: odom
+    Frame Rate: 30
+    Tool Collisions Enabled: false
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+      Hide Inactive Objects: true
+      Name: 2D Pose Estimate
+      Topic: /initialpose
+  Tools Collisions Enabled: false
+  Transformation:
+    Current:
+      Class: rviz_default_plugins/TF
+      Distance: 10
+      Focal Point Fixed: true
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05
+      Pitch: 0.785398
+      Target Frame: <Fixed Frame>
+      X: 0
+      Y: -10
+      Z: 15
+      Yaw: 0.785398
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 10
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05
+      Name: Current View
+      Near Clip Distance: 0.01
+      Pitch: 0.785398
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz_default_plugins)
+      X: 0
+      Y: -10
+      Z: 15
+      Yaw: 0.785398
+    Saved: ~
+Window Geometry:
+  Height: 800
+  Width: 1200
+  X: 100
+  Y: 100

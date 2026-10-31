@@ -1,0 +1,331 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="line_follower_robot">
+
+  
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.12 0.04" /></geometry>
+      <material name="brightred">
+        <color rgba="1 0 0 1" />
+      </material>
+    </visual>
+    <visual>
+      <origin xyz="0 0 0.35" rpy="0 0 0" />
+      <geometry>
+        <box size="0.12 0.12 0.04" /></geometry>
+      <material name="flaggreen">
+        <color rgba="0 1 0 1" />
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.5" />
+      <origin xyz="0 0 0.022" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001" />
+    </inertial>
+  </link>
+
+  
+  <link name="left_front_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5708 0.0000 0.0000" />
+      <geometry>
+        
+      <cylinder radius="0.02" length="0.016" /></geometry>
+      
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.5708 0.0000 0.0000" />
+      <geometry>
+        
+      <cylinder radius="0.02" length="0.016" /></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05" />
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001" />
+    </inertial>
+  </link>
+
+  <link name="right_front_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5708 0.0000 0.0000" />
+      <geometry>
+        
+      <cylinder radius="0.02" length="0.016" /></geometry>
+      
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.5708 0.0000 0.0000" />
+      <geometry>
+        
+      <cylinder radius="0.02" length="0.016" /></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05" />
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001" />
+    </inertial>
+  </link>
+
+  <link name="left_rear_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5708 0.0000 0.0000" />
+      <geometry>
+        
+      <cylinder radius="0.02" length="0.016" /></geometry>
+      
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.5708 0.0000 0.0000" />
+      <geometry>
+        
+      <cylinder radius="0.02" length="0.016" /></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05" />
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001" />
+    </inertial>
+  </link>
+
+  <link name="right_rear_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5708 0.0000 0.0000" />
+      <geometry>
+        
+      <cylinder radius="0.02" length="0.016" /></geometry>
+      
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.5708 0.0000 0.0000" />
+      <geometry>
+        
+      <cylinder radius="0.02" length="0.016" /></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05" />
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001" />
+    </inertial>
+  </link>
+
+  
+  <link name="motor_fl">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        
+      <box size="0.12 0.12 0.04" /></geometry>
+      
+    </visual>
+    <inertial>
+      <mass value="0.02" />
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+    </inertial>
+  </link>
+
+  <link name="motor_fr">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        
+      <box size="0.12 0.12 0.04" /></geometry>
+      
+    </visual>
+    <inertial>
+      <mass value="0.02" />
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+    </inertial>
+  </link>
+
+  <link name="motor_rl">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        
+      <box size="0.12 0.12 0.04" /></geometry>
+      
+    </visual>
+    <inertial>
+      <mass value="0.02" />
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+    </inertial>
+  </link>
+
+  <link name="motor_rr">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        
+      <box size="0.12 0.12 0.04" /></geometry>
+      
+    </visual>
+    <inertial>
+      <mass value="0.02" />
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+    </inertial>
+  </link>
+
+  
+  <link name="mcu">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        
+      <box size="0.12 0.12 0.04" /></geometry>
+      
+    </visual>
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+    </inertial>
+  </link>
+
+  
+  <link name="battery">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        
+      <box size="0.12 0.12 0.04" /></geometry>
+      
+    </visual>
+    <inertial>
+      <mass value="0.1" />
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001" />
+    </inertial>
+  </link>
+
+  
+  <link name="line_sensor_front">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        
+      <box size="0.12 0.12 0.04" /></geometry>
+      
+    </visual>
+  </link>
+
+  <link name="line_sensor_rear">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        
+      <box size="0.12 0.12 0.04" /></geometry>
+      
+    </visual>
+  </link>
+
+  
+  <joint name="front_left_wheel_joint" type="continuous">
+    <parent link="base_link" />
+    <child link="left_front_wheel" />
+    <origin xyz="0.045 0.065 0.020" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <joint name="front_right_wheel_joint" type="continuous">
+    <parent link="base_link" />
+    <child link="right_front_wheel" />
+    <origin xyz="0.045 -0.065 0.020" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <joint name="rear_left_wheel_joint" type="continuous">
+    <parent link="base_link" />
+    <child link="left_rear_wheel" />
+    <origin xyz="-0.045 0.065 0.020" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <joint name="rear_right_wheel_joint" type="continuous">
+    <parent link="base_link" />
+    <child link="right_rear_wheel" />
+    <origin xyz="-0.045 -0.065 0.020" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <joint name="motor_fl_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="motor_fl" />
+    <origin xyz="-0.045 0.040 0.020" rpy="0 0 0" />
+  </joint>
+
+  <joint name="motor_fr_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="motor_fr" />
+    <origin xyz="-0.045 -0.040 0.020" rpy="0 0 0" />
+  </joint>
+
+  <joint name="motor_rl_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="motor_rl" />
+    <origin xyz="0.045 0.040 0.020" rpy="0 0 0" />
+  </joint>
+
+  <joint name="motor_rr_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="motor_rr" />
+    <origin xyz="0.045 -0.040 0.020" rpy="0 0 0" />
+  </joint>
+
+  <joint name="mcu_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="mcu" />
+    <origin xyz="-0.0439 0.0202 0.0292" rpy="0 0 0" />
+  </joint>
+
+  <joint name="battery_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="battery" />
+    <origin xyz="0.011 0 0.0155" rpy="0 0 0" />
+  </joint>
+
+  <joint name="line_sensor_front_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="line_sensor_front" />
+    <origin xyz="0.054 0 0.0092" rpy="0 0 0" />
+  </joint>
+
+  <joint name="line_sensor_rear_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="line_sensor_rear" />
+    <origin xyz="-0.062 0 0.0092" rpy="0 0 0" />
+  </joint>
+
+  
+  <gazebo>
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+      <left_joint>front_left_wheel_joint</left_joint>
+      <right_joint>front_right_wheel_joint</right_joint>
+      <wheel_separation>0.130</wheel_separation>
+      <wheel_radius>0.020</wheel_radius>
+      <odometry_publish_frequency>50</odometry_publish_frequency>
+      <robot_base_frame>base_link</robot_base_frame>
+      
+      <topic>/cmd_vel</topic>
+      
+      <publish_odom_tf>false</publish_odom_tf>
+      <publish_wheel_tf>false</publish_wheel_tf>
+      <odometry_frame>odom</odometry_frame>
+    </plugin>
+
+    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+      <joint_name>front_left_wheel_joint</joint_name>
+      <joint_name>front_right_wheel_joint</joint_name>
+      <joint_name>rear_left_wheel_joint</joint_name>
+      <joint_name>rear_right_wheel_joint</joint_name>
+    </plugin>
+  </gazebo>
+
+  
+  <gazebo reference="left_rear_wheel">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+  </gazebo>
+
+  <gazebo reference="right_rear_wheel">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+  </gazebo>
+
+</robot>

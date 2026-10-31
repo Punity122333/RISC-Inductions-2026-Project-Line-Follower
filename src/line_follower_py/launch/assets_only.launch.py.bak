@@ -1,0 +1,154 @@
+from launch.substitutions import LaunchConfiguration, PythonExpression
+
+from pathlib import Path
+
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, TimerAction
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+
+
+PACKAGE_NAME = "line_follower_py"
+
+
+def locate_robot_urdf(share_dir: Path) -> Path:
+    candidates = [
+        share_dir / "urdf" / "robot.urdf",
+        share_dir / "description" / "robot.urdf",
+        share_dir / "assets" / "robot.urdf",
+        share_dir / "robot.urdf",
+    ]
+
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+
+    raise FileNotFoundError(
+        "robot.urdf was not found in the installed package. "
+        "Install it under share/line_follower_py/urdf/robot.urdf."
+    )
+
+
+def generate_launch_description():
+    share_dir = Path(get_package_share_directory(PACKAGE_NAME))
+    urdf_file = locate_robot_urdf(share_dir)
+    robot_description = urdf_file.read_text(encoding="utf-8")
+
+    world_arg = DeclareLaunchArgument(
+        "world",
+        default_value="track_world",
+        description="SDF file name (no .sdf) in share/line_follower_py/worlds",
+    )
+
+    gazebo = ExecuteProcess(
+        cmd=[
+            "gz", "sim", "-r",
+            [str(share_dir / "worlds") + "/", LaunchConfiguration("world"), ".sdf"],
+        ],
+        output="screen",
+    )
+
+    robot_state_publisher = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        name="robot_state_publisher",
+        output="screen",
+        parameters=[
+            {
+                "robot_description": robot_description,
+                "use_sim_time": True,
+            }
+        ],
+    )
+
+    joint_state_publisher = Node(
+        package="joint_state_publisher",
+        executable="joint_state_publisher",
+        name="joint_state_publisher",
+        output="screen",
+        parameters=[{"use_sim_time": True}],
+    )
+
+    ros_gz_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        name="gz_bridge",
+        output="screen",
+        arguments=[
+            "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
+            "/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist",
+            "/model/line_follower_robot/odometry"
+            "@nav_msgs/msg/Odometry[gz.msgs.Odometry",
+        ],
+    )
+
+    camera_image_bridge = Node(
+        package="ros_gz_image",
+        executable="image_bridge",
+        name="camera_image_bridge",
+        output="screen",
+        arguments=["/camera/image"],
+    )
+
+    line_detector = Node(
+        package=PACKAGE_NAME,
+        executable="line_detector",
+        name="line_detector",
+        output="screen",
+        parameters=[
+            {
+                "image_topic": "/camera/image",
+                "debug_topic": "/camera/debug_image",
+                "dark_threshold": 115,
+                "error_sign": 1.0,
+            }
+        ],
+    )
+
+    ws_root = share_dir.parents[2].parent
+    src_ctrl = ws_root / "src" / PACKAGE_NAME / PACKAGE_NAME / "pd_controller_node.py"
+    if src_ctrl.is_file():
+        ctrl_cmd = ["python3", str(src_ctrl)]
+    else:
+        ctrl_cmd = ["python3", "-m", f"{PACKAGE_NAME}.pd_controller_node"]
+    pd_controller = ExecuteProcess(cmd=ctrl_cmd, output="screen")
+
+    track_publisher = Node(
+        package=PACKAGE_NAME,
+        executable="track_publisher",
+        name="track_publisher",
+        output="screen",
+        parameters=[{"use_sim_time": True}],
+    )
+
+    spawn_robot = Node(
+        package="ros_gz_sim",
+        executable="create",
+        name="spawn_robot",
+        output="screen",
+        arguments=[
+            "-name", "line_follower_robot",
+            "-topic", "robot_description",
+            "-x", PythonExpression(["1.901 if '", LaunchConfiguration("world"), "' == 'silverstone' else 0.0"]),
+            "-y", PythonExpression(["-11.876 if '", LaunchConfiguration("world"), "' == 'silverstone' else 0.0"]),
+            "-z", "0",
+            "-Y", PythonExpression(["-2.7988 if '", LaunchConfiguration("world"), "' == 'silverstone' else 0.0"]),
+        ],
+    )
+
+    delayed_spawn = TimerAction(period=2.0, actions=[spawn_robot])
+    delayed_controller = TimerAction(period=5.0, actions=[pd_controller])
+
+    return LaunchDescription([
+        world_arg,
+        gazebo,
+        robot_state_publisher,
+        joint_state_publisher,
+        ros_gz_bridge,
+        camera_image_bridge,
+        line_detector,
+        track_publisher,
+        delayed_spawn,
+        delayed_controller,
+    ])

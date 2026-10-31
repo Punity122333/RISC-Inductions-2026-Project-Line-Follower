@@ -1,0 +1,52 @@
+[3.569s] Invoking command in '/mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/build --no-deps symlink_data
+[4.814s] running develop
+[5.159s] running egg_info
+[5.179s] creating line_follower_py.egg-info
+[5.180s] writing line_follower_py.egg-info/PKG-INFO
+[5.188s] writing dependency_links to line_follower_py.egg-info/dependency_links.txt
+[5.190s] writing entry points to line_follower_py.egg-info/entry_points.txt
+[5.192s] writing requirements to line_follower_py.egg-info/requires.txt
+[5.194s] writing top-level names to line_follower_py.egg-info/top_level.txt
+[5.196s] writing manifest file 'line_follower_py.egg-info/SOURCES.txt'
+[5.362s] reading manifest file 'line_follower_py.egg-info/SOURCES.txt'
+[5.436s] writing manifest file 'line_follower_py.egg-info/SOURCES.txt'
+[5.474s] running build_ext
+[5.476s] Creating /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/lib/python3.12/site-packages/line-follower-py.egg-link (link to .)
+[5.487s] Installing gazebo_line_sim script to /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/lib/line_follower_py
+[5.495s] Installing line_detector script to /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/lib/line_follower_py
+[5.504s] Installing track_publisher script to /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/lib/line_follower_py
+[5.515s] 
+[5.516s] Installed /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py
+[5.517s] running symlink_data
+[5.520s] creating /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/ament_index/resource_index/packages
+[5.534s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/resource/line_follower_py -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/ament_index/resource_index/packages
+[5.546s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/package.xml -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py
+[5.549s] creating /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/launch
+[5.557s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/launch/assets_only.launch.py -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/launch
+[5.567s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/launch/sim_config.rviz -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/launch
+[5.571s] creating /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/urdf
+[5.579s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/urdf/chassis.stl -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/urdf
+[5.589s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/urdf/robot.stl -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/urdf
+[5.599s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/urdf/robot.urdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/urdf
+[5.608s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/urdf/wheel.stl -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/urdf
+[5.612s] creating /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.620s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/circle_0_5.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.630s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/circle_1_0.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.639s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/circle_2_5.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.648s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/final_grading.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.660s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/hexagon.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.669s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/hexagon_0_5.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.678s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/hexagon_1_0.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.687s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/line.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.697s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/loop0.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.705s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/loop1.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.714s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/monza.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.723s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/redbull.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.733s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/s_loop_open.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.742s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/square.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.751s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/square_2_5.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.761s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/track_world.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.770s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/worlds/triangle.sdf -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/worlds
+[5.774s] creating /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/meshes
+[5.782s] symbolically linking /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/meshes/final_grading.stl -> /mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/share/line_follower_py/meshes
+[5.807s] Invoked command in '/mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/mnt/c/Users/parth/LineFollowerAssets/install/line_follower_py/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /mnt/c/Users/parth/LineFollowerAssets/build/line_follower_py/build --no-deps symlink_data

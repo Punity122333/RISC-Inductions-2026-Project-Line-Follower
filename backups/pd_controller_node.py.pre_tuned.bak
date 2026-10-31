@@ -1,0 +1,589 @@
+#!/usr/bin/env python3
+
+"""Camera PID controller for line following (corner-agnostic version).
+
+Subscribes:
+    /line_error: Float32MultiArray [error, status, (lean)]
+
+Publishes:
+    /cmd_vel: geometry_msgs/Twist
+
+Detector statuses:
+    0 = tracking
+    1 = temporarily lost
+    2 = corner / branch / intersection
+    3 = persistently lost
+
+Features:
+    * tuned defaults (slow, tight gains)
+    * optional nonlinear proportional gain (kp_nl; set 0.0 for pure linear P)
+    * derivative computed per camera frame from measurement time, with a
+      time-aware low-pass filter; history reset on every loss
+    * conditional-integration anti-windup plus an integral zone
+    * speed scheduling (error, error rate, commanded turn rate) and linear
+      acceleration limits
+    * corner recovery that does NOT assume a turn direction:
+        - the side is guessed from the error trend (+ line lean) just before
+          the loss, falling back to the side of the last successful recovery
+        - the pivot search sweeps in alternating legs (1x, 2x, 2x, ... of
+          search_leg_sec), so a wrong guess is corrected automatically
+        - corner_turn_sign = +1 / -1 still forces one direction (old behaviour)
+    * 1 Hz debug log while tracking
+"""
+
+import math
+import time
+
+import rclpy
+from rclpy.node import Node
+from geometry_msgs.msg import Twist
+from std_msgs.msg import Float32MultiArray
+
+
+class CameraPIDController(Node):
+    def __init__(self):
+        super().__init__("camera_pid_controller")
+
+        def param(name, default):
+            self.declare_parameter(name, default)
+            return self.get_parameter(name).value
+
+        # --- PID gains (error approximately in [-2, +2]) ---
+        self.kp = float(param("kp", 2.5))
+        # Extra gain growing with |error|; 0.0 reproduces plain linear P.
+        self.kp_nl = float(param("kp_nl", 0.80359))
+        self.ki = float(param("ki", 0.00372))
+        self.kd = float(param("kd", 0.19844))
+        # Heading term: rad/s of turn per rad of line lean (status 0 only).
+        self.kh = float(param("kh", 0.0))
+        self.max_lean = max(0.1, float(param("max_lean", 1.05)))
+        self.integral_limit = max(0.0, float(param("integral_limit", 0.35)))
+        # Integrate only while |error| is below this (never in a corner).
+        self.i_zone = max(0.0, float(param("i_zone", 0.6)))
+
+        # --- Motion limits ---
+        self.v_base = max(0.0, float(param("v_base", 0.15)))
+        self.v_min = max(0.0, min(self.v_base, float(param("v_min", 0.0112))))
+        self.max_w = max(0.0, float(param("max_w", 3.89781)))
+        self.max_w_rate = max(0.0, float(param("max_w_rate", 43.88257)))
+        self.max_v_accel = max(0.0, float(param("max_v_accel", 1.0)))
+        self.max_v_decel = max(0.0, float(param("max_v_decel", 2.0)))
+
+        # --- Speed scheduling (each term removes a fraction of v_base) ---
+        self.error_slowdown = float(param("error_slowdown", 0.0))
+        self.rate_slowdown = float(param("rate_slowdown", 0.01154))
+        self.turn_slowdown = float(param("turn_slowdown", 0.0))
+        # Extra scale when the detector reports a corner / branch (status 2).
+        self.corner_speed_scale = max(
+            0.1, min(1.0, float(param("corner_speed_scale", 1.0)))
+        )
+
+        # --- Filtering / robustness ---
+        self.sensor_timeout = max(0.05, float(param("sensor_timeout", 0.45)))
+        self.derivative_tau = max(0.001, float(param("derivative_tau", 0.06059)))
+        self.max_error = max(0.1, float(param("max_error", 2.0)))
+        self.max_derivative = max(0.1, float(param("max_derivative", 8.0)))
+
+        # --- Corner recovery ---
+        self.lost_grace_sec = max(0.0, float(param("lost_grace_sec", 0.41267)))
+        self.recovery_w = max(0.0, float(param("recovery_w", 3.5)))
+        self.enable_search = bool(param("enable_search", True))
+        self.search_w = max(0.0, float(param("search_w", 2.97656)))
+        self.search_timeout = max(0.0, float(param("search_timeout", 4.0)))
+        # |predicted error| above this latches which side the line is leaving.
+        self.turn_latch_threshold = max(
+            0.0, float(param("turn_latch_threshold", 0.4))
+        )
+        # Predict the error this far ahead (uses the error derivative), so the
+        # latched side follows where the line is going, not where it was.
+        self.turn_lookahead_sec = max(0.0, float(param("turn_lookahead_sec", 0.15)))
+        # Weight of the line lean in the side prediction (status 0 only).
+        # Needs the detector to publish lean as the 3rd element; 0 disables.
+        self.lean_hint_gain = float(param("lean_hint_gain", 0.5))
+        # A latched side older than this is considered stale (previous corner).
+        self.turn_hint_max_age_sec = max(0.0, float(param("turn_hint_max_age_sec", 1.5)))
+        # Forced side: +1.0 = left, -1.0 = right, 0.0 = AUTO (default, track
+        # agnostic). Forcing disables sweep reversal. If your detector has a
+        # preferred_branch_side, set it to "none"/auto there as well, otherwise
+        # that is the same fixed-direction assumption in another place.
+        self.corner_turn_sign = self.clamp(float(param("corner_turn_sign", 0.0)), -1.0, 1.0)
+        # In AUTO mode, alternate the search direction so a wrong first guess
+        # is corrected. Leg lengths: 1x, 2x, 2x, ... of search_leg_sec.
+        self.reverse_search = bool(param("reverse_search", True))
+        self.search_leg_sec = max(0.1, float(param("search_leg_sec", 1.0)))
+
+        # While recovering toward side s, a line seen on the OPPOSITE side
+        # (error*s above this) is the line we just came from: keep turning.
+        self.reacquire_wrong_side_error = float(param("reacquire_wrong_side_error", 0.3))
+        self.corner_gate = False
+        self.gate_start = 0.0
+
+        # Latest detector output.
+        self.error = 0.0
+        self.lean = 0.0
+        self.status = -1
+        self.last_valid_error = 0.0
+        self.last_message_time = None
+        self.lost_since = None
+        self.valid_streak = 0
+        self.has_seen_line = False
+
+        # Turn-side bookkeeping.
+        # Sign of angular.z that turns toward where the line was heading.
+        self.turn_sign = 0.0
+        self.turn_sign_time = 0.0
+        # Side of the last successful recovery (soft prior only).
+        self.learned_side = 0.0
+        # Per-loss recovery state.
+        self.recovery_latched = False
+        self.search_side0 = 0.0
+        self.search_confident = False
+        self.active_side = 0.0
+
+        # PID state (derivative / integral updated once per camera frame).
+        self.integral = 0.0
+        self.previous_error = None
+        self.previous_measurement_time = None
+        self.filtered_derivative = 0.0
+
+        # Output state.
+        self.last_control_time = time.monotonic()
+        self.last_angular = 0.0
+        self.last_linear = 0.0
+
+        self.last_warning_time = 0.0
+        self.last_debug_log_time = 0.0
+        self.phase = "idle"
+
+        self.cmd_pub = self.create_publisher(Twist, "/cmd_vel", 10)
+        self.error_sub = self.create_subscription(
+            Float32MultiArray, "/line_error", self.error_callback, 10
+        )
+        self.timer = self.create_timer(0.02, self.control_loop)  # 50 Hz
+
+        mode = (
+            "auto" if self.corner_turn_sign == 0.0
+            else ("left" if self.corner_turn_sign > 0 else "right")
+        )
+        self.get_logger().info(
+            "Camera PID started: "
+            f"Kp={self.kp:.3f}, Kp_nl={self.kp_nl:.3f}, Ki={self.ki:.3f}, "
+            f"Kd={self.kd:.3f}, v_base={self.v_base:.3f} m/s, "
+            f"max_w={self.max_w:.2f} rad/s, search={self.enable_search}, "
+            f"corner side={mode}."
+        )
+
+    # ------------------------------------------------------------------ utils
+    @staticmethod
+    def clamp(value, low, high):
+        return max(low, min(high, value))
+
+    def publish_cmd(self, linear, angular):
+        cmd = Twist()
+        cmd.linear.x = float(linear)
+        cmd.angular.z = float(angular)
+        self.cmd_pub.publish(cmd)
+
+    def stop(self):
+        self.publish_cmd(0.0, 0.0)
+        self.last_angular = 0.0
+        self.last_linear = 0.0
+
+    def reset_derivative(self):
+        self.previous_error = None
+        self.previous_measurement_time = None
+        self.filtered_derivative = 0.0
+
+    def warn_throttled(self, message):
+        now = time.monotonic()
+        if now - self.last_warning_time >= 2.0:
+            self.get_logger().warning(message)
+            self.last_warning_time = now
+
+    def recovery_sign(self):
+        """Side currently being recovered toward (0.0 if no recovery yet)."""
+        return self.active_side
+
+    def decide_recovery_side(self, now):
+        """Pick the first side to try when the line is lost.
+
+        Returns (side, confident). `confident` means there is real evidence
+        (forced setting or a fresh trend), not just a prior or a coin flip.
+        """
+        if self.corner_turn_sign != 0.0:
+            return self.corner_turn_sign, True
+
+        fresh = (
+            self.turn_sign != 0.0
+            and now - self.turn_sign_time <= self.turn_hint_max_age_sec
+        )
+        if fresh:
+            return self.turn_sign, True
+
+        if self.learned_side != 0.0:
+            return self.learned_side, False
+
+        return 1.0, False  # arbitrary; the sweep reversal covers a wrong guess
+
+    def search_side_for(self, t_search):
+        """Pivot direction at `t_search` seconds into the search."""
+        if self.corner_turn_sign != 0.0 or not self.reverse_search:
+            return self.search_side0
+
+        leg = 0
+        start = 0.0
+        length = self.search_leg_sec
+        while t_search >= start + length:
+            start += length
+            leg += 1
+            length = 2.0 * self.search_leg_sec
+        return self.search_side0 if leg % 2 == 0 else -self.search_side0
+
+    def set_phase(self, phase):
+        if phase != self.phase:
+            self.get_logger().info(
+                f"Phase {self.phase} -> {phase} | status={self.status} "
+                f"err={self.error:+.3f} last_valid={self.last_valid_error:+.3f} "
+                f"d={self.filtered_derivative:+.3f} turn_sign={self.recovery_sign():+.0f} "
+                f"w={self.last_angular:+.3f} v={self.last_linear:.3f}"
+            )
+            self.phase = phase
+
+    def rate_limit_angular(self, target, dt):
+        max_change = self.max_w_rate * dt
+        result = self.clamp(
+            target, self.last_angular - max_change, self.last_angular + max_change
+        )
+        self.last_angular = result
+        return result
+
+    def rate_limit_linear(self, target, dt):
+        result = self.clamp(
+            target,
+            self.last_linear - self.max_v_decel * dt,
+            self.last_linear + self.max_v_accel * dt,
+        )
+        self.last_linear = max(0.0, result)
+        return self.last_linear
+
+    def pivot(self, side, dt):
+        target_w = self.clamp(side * self.search_w, -self.max_w, self.max_w)
+        angular = self.rate_limit_angular(target_w, dt)
+        linear = self.rate_limit_linear(0.0, dt)
+        self.publish_cmd(linear, angular)
+
+    def steering(self, error, integral, derivative, lean=0.0):
+        """PID output as angular.z (positive error = line image-right
+        -> negative angular.z steers right). `lean` is the line's tilt
+        relative to the heading (positive = leaning image-right)."""
+        p_term = self.kp * error + self.kp_nl * error * abs(error) / self.max_error
+        return -(p_term + self.kh * lean + self.ki * integral + self.kd * derivative)
+
+    # --------------------------------------------------------- detector input
+    def error_callback(self, msg):
+        if len(msg.data) < 2:
+            return
+
+        error = float(msg.data[0])
+        raw_status = float(msg.data[1])
+
+        if not math.isfinite(error) or not math.isfinite(raw_status):
+            return
+
+        status = int(round(raw_status))
+        now = time.monotonic()
+        self.last_message_time = now
+
+        if abs(raw_status - status) > 0.01 or status not in (0, 1, 2, 3):
+            self.status = -1
+            self.valid_streak = 0
+            self.lost_since = None
+            self.reset_derivative()
+            return
+
+        previous_status = self.status
+        self.status = status
+        self.error = self.clamp(error, -self.max_error, self.max_error)
+        lean = float(msg.data[2]) if len(msg.data) >= 3 else 0.0
+        self.lean = self.clamp(lean, -self.max_lean, self.max_lean) if math.isfinite(lean) else 0.0
+
+        if status in (0, 2):
+            if previous_status not in (0, 2):
+                # Reacquisition: avoid a derivative spike from the dropout.
+                self.reset_derivative()
+                self.integral *= 0.5
+
+            self.last_valid_error = self.error
+            self.has_seen_line = True
+            self.valid_streak += 1
+            self.lost_since = None
+            self.recovery_latched = False  # next loss decides its side afresh
+
+            self.update_pid(self.error, now)
+
+            # Where is the line heading? Error trend, plus lean when tracking.
+            predicted = self.error + self.turn_lookahead_sec * self.filtered_derivative
+            if status == 0:
+                predicted += self.lean_hint_gain * self.lean
+            if abs(predicted) >= self.turn_latch_threshold:
+                # Positive error (line image-right) -> negative angular.z.
+                self.turn_sign = -1.0 if predicted > 0.0 else 1.0
+                self.turn_sign_time = now
+        else:
+            self.valid_streak = 0
+            self.reset_derivative()
+            # Keep the original loss time across 1 -> 3 so timers don't restart.
+            if self.lost_since is None:
+                self.lost_since = now
+
+    def update_pid(self, error, now):
+        """Run once per usable camera frame, using measurement time."""
+        if (
+            self.previous_error is not None
+            and self.previous_measurement_time is not None
+        ):
+            sample_dt = now - self.previous_measurement_time
+
+            if 0.005 <= sample_dt <= self.sensor_timeout:
+                derivative = self.clamp(
+                    (error - self.previous_error) / sample_dt,
+                    -self.max_derivative,
+                    self.max_derivative,
+                )
+                alpha = sample_dt / (self.derivative_tau + sample_dt)
+                self.filtered_derivative += alpha * (
+                    derivative - self.filtered_derivative
+                )
+            elif sample_dt > self.sensor_timeout:
+                self.filtered_derivative = 0.0
+            # sample_dt < 5 ms (duplicate frame): keep derivative unchanged.
+        else:
+            sample_dt = 1.0 / 30.0
+            self.filtered_derivative = 0.0
+
+        # Error crossing zero: bleed integral to avoid overshoot.
+        if self.previous_error is not None and error * self.previous_error < 0.0:
+            self.integral *= 0.5
+
+        integral_dt = self.clamp(sample_dt, 0.005, 0.2)
+
+        self.previous_error = error
+        self.previous_measurement_time = now
+
+        if self.status == 0 and abs(error) <= self.i_zone:
+            if abs(error) < 0.04:
+                self.integral *= max(0.0, 1.0 - 2.0 * integral_dt)
+            else:
+                candidate = self.clamp(
+                    self.integral + error * integral_dt,
+                    -self.integral_limit,
+                    self.integral_limit,
+                )
+                output = self.steering(error, candidate, self.filtered_derivative)
+
+                # Integrate only if unsaturated, or if it helps pull the
+                # controller out of saturation.
+                if abs(output) <= self.max_w or output * error > 0.0:
+                    self.integral = candidate
+        else:
+            # Corners, branches, large error: no build-up, fast decay.
+            self.integral *= max(0.0, 1.0 - 4.0 * integral_dt)
+
+    # ----------------------------------------------------------- control loop
+    def control_loop(self):
+        now = time.monotonic()
+        dt = self.clamp(now - self.last_control_time, 0.001, 0.1)
+        self.last_control_time = now
+
+        # Dead camera pipeline: never leave a stale command active.
+        if (
+            self.last_message_time is None
+            or now - self.last_message_time > self.sensor_timeout
+        ):
+            self.stop()
+            self.integral = 0.0
+            self.reset_derivative()
+            self.set_phase("idle")
+            self.warn_throttled("Camera detector data missing or stale; stopped.")
+            return
+
+        if self.status == -1:
+            self.stop()
+            self.integral = 0.0
+            self.set_phase("idle")
+            self.warn_throttled("Invalid detector status; stopped.")
+            return
+
+        # Line lost (status 1 or 3): corner recovery.
+        if self.status in (1, 3):
+            self.recover(now, dt)
+            return
+
+        # Corner recovery is still "committed": don't hand over to the line
+        # tracker until the line we see is plausibly the NEW edge, not the
+        # one we just left (which sits on the trailing side while we pivot).
+        if self.corner_gate:
+            side = self.recovery_sign()
+            window = self.lost_grace_sec + self.search_timeout + 1.0
+            timed_out = now - self.gate_start > window
+            wrong_side = side != 0.0 and self.error * side > self.reacquire_wrong_side_error
+
+            if side == 0.0 or timed_out or (self.valid_streak >= 2 and not wrong_side):
+                self.corner_gate = False
+                if side != 0.0 and not timed_out:
+                    # Soft prior for the next unexplained loss.
+                    self.learned_side = side
+                self.get_logger().info(
+                    f"Line reacquired: err={self.error:+.3f} status={self.status} "
+                    f"side={side:+.0f} after {now - self.gate_start:.2f}s"
+                )
+            else:
+                self.set_phase("search")
+                self.pivot(side, dt)
+                return
+
+        # Wait for two consecutive usable readings. Hold the previous command
+        # meanwhile so a reacquisition mid-turn doesn't glitch to a stop.
+        if self.valid_streak < 2:
+            self.publish_cmd(self.last_linear, self.last_angular)
+            return
+
+        self.set_phase("tracking")
+        self.track(now, dt)
+
+    def track(self, now, dt):
+        error = self.error
+
+        target_w = self.clamp(
+            self.steering(
+                error,
+                self.integral,
+                self.filtered_derivative,
+                self.lean if self.status == 0 else 0.0,
+            ),
+            -self.max_w,
+            self.max_w,
+        )
+        angular = self.rate_limit_angular(target_w, dt)
+
+        # Speed scheduling: slow for large error, fast-changing error, and
+        # large commanded turn rate.
+        e_frac = min(abs(error) / self.max_error, 1.0)
+        d_frac = min(abs(self.filtered_derivative) / self.max_derivative, 1.0)
+        w_frac = min(abs(angular) / self.max_w, 1.0) if self.max_w > 0.0 else 0.0
+
+        scale = max(
+            0.0,
+            1.0
+            - self.error_slowdown * e_frac
+            - self.rate_slowdown * d_frac
+            - self.turn_slowdown * w_frac,
+        )
+        target_v = max(self.v_min, self.v_base * scale)
+
+        if self.status == 2:
+            target_v = max(self.v_min, target_v * self.corner_speed_scale)
+
+        linear = self.rate_limit_linear(target_v, dt)
+        self.publish_cmd(linear, angular)
+
+        if now - self.last_debug_log_time >= 1.0:
+            self.get_logger().info(
+                f"status={self.status} error={error:+.3f} "
+                f"d={self.filtered_derivative:+.3f} i={self.integral:+.3f} "
+                f"v={linear:.3f} w={angular:+.3f}"
+            )
+            self.last_debug_log_time = now
+
+    def recover(self, now, dt):
+        elapsed = float("inf") if self.lost_since is None else now - self.lost_since
+
+        if not self.has_seen_line:
+            self.stop()
+            self.set_phase("idle")
+            return
+
+        # Decide the first side once per loss. If we are still inside a
+        # committed recovery (brief flicker), keep the earlier decision.
+        if not self.recovery_latched:
+            self.recovery_latched = True
+            if not self.corner_gate:
+                self.search_side0, self.search_confident = self.decide_recovery_side(now)
+                self.corner_gate = True
+                self.gate_start = now
+                self.get_logger().info(
+                    f"Line lost: first side={self.search_side0:+.0f} "
+                    f"({'evidence' if self.search_confident else 'guess'}), "
+                    f"last_valid={self.last_valid_error:+.3f}"
+                )
+            self.active_side = self.search_side0
+
+        if now - self.last_debug_log_time >= 0.25:
+            self.get_logger().info(
+                f"lost: status={self.status} elapsed={elapsed:.2f}s "
+                f"side={self.active_side:+.0f} "
+                f"last_valid={self.last_valid_error:+.3f} w={self.last_angular:+.3f}"
+            )
+            self.last_debug_log_time = now
+
+        # Phase 1: momentum (only with real evidence of the turn side). The
+        # line just left the image, usually at a corner. Keep turning toward
+        # the side it left on, with a slow creep. Without evidence we skip
+        # this so a wrong guess doesn't commit the robot to a bad turn.
+        if self.search_confident and elapsed <= self.lost_grace_sec:
+            self.set_phase("momentum")
+
+            side = self.search_side0
+            self.active_side = side
+            target_w = side * max(abs(self.last_angular), self.recovery_w)
+            target_w = self.clamp(target_w, -self.max_w, self.max_w)
+            angular = self.rate_limit_angular(target_w, dt)
+            linear = self.rate_limit_linear(min(self.v_min, self.v_base * 0.25), dt)
+            self.integral *= max(0.0, 1.0 - 4.0 * dt)
+            self.publish_cmd(linear, angular)
+            return
+
+        # Phase 2: bounded pivot search. Alternates direction (1x, 2x, 2x ...
+        # legs) unless a side is forced or reverse_search is off.
+        t_search = elapsed - (self.lost_grace_sec if self.search_confident else 0.0)
+        if self.enable_search and t_search <= self.search_timeout:
+            side = self.search_side_for(t_search)
+            if side != self.active_side:
+                self.get_logger().info(
+                    f"Search reversing -> side={side:+.0f} at t={t_search:.2f}s"
+                )
+            self.active_side = side
+            self.set_phase("search")
+            self.pivot(side, dt)
+            return
+
+        # Phase 3: give up.
+        self.stop()
+        self.integral = 0.0
+        self.set_phase("stopped")
+        self.warn_throttled("Line lost beyond recovery window; stopped.")
+
+    def destroy_node(self):
+        self.stop()
+        super().destroy_node()
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = CameraPIDController()
+
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.stop()
+        time.sleep(0.05)
+        node.destroy_node()
+
+        if rclpy.ok():
+            rclpy.shutdown()
+
+
+if __name__ == "__main__":
+    main()
