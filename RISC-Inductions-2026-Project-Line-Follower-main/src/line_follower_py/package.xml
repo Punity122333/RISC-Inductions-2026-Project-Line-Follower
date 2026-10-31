@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>line_follower_py</name>
+  <version>0.0.0</version>
+  <description>ROS 2 camera-based line follower simulation and PD controller</description>
+  <maintainer email="debarprit@todo.todo">debarprit</maintainer>
+  <license>Apache-2.0</license>
+
+  <depend>visualization_msgs</depend>
+  <depend>turtlesim</depend>
+  <depend>gazebo_ros</depend>
+  <depend>gazebo_ros_pkgs</depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <gazebo_ros gazebo_model_path="${prefix}/.." gazebo_media_path="${prefix}/.."/>
+    <build_type>ament_python</build_type>
+  </export>
+
+<exec_depend>ament_index_python</exec_depend>
+<exec_depend>launch</exec_depend>
+<exec_depend>launch_ros</exec_depend>
+
+<exec_depend>rclpy</exec_depend>
+<exec_depend>std_msgs</exec_depend>
+<exec_depend>sensor_msgs</exec_depend>
+<exec_depend>geometry_msgs</exec_depend>
+<exec_depend>nav_msgs</exec_depend>
+<exec_depend>tf2_ros</exec_depend>
+
+<exec_depend>cv_bridge</exec_depend>
+<exec_depend>python3-opencv</exec_depend>
+<exec_depend>python3-numpy</exec_depend>
+
+<exec_depend>robot_state_publisher</exec_depend>
+<exec_depend>joint_state_publisher</exec_depend>
+<exec_depend>ros_gz_sim</exec_depend>
+<exec_depend>ros_gz_bridge</exec_depend>
+<exec_depend>ros_gz_image</exec_depend></package>
