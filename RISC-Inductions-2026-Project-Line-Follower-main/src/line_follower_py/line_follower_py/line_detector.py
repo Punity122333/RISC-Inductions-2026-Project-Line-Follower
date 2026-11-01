@@ -60,7 +60,7 @@ class CameraLineDetector(Node):
         self.create_subscription(
             Image, self.image_topic, self.image_callback, qos_profile_sensor_data
         )
-        self.get_logger().info("Downfacing line detector started.")
+        self.get_logger().info("Down-facing line detector started.")
 
     @staticmethod
     def clamp(v, lo, hi):

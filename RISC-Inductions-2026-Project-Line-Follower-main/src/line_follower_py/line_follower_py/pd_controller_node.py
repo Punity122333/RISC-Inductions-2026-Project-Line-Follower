@@ -24,6 +24,10 @@ Features:
       acceleration limits
     * corner recovery: momentum turn toward the side the line was last seen,
       then a bounded pivot search (enable_search:=false = stop when lost)
+    * overshoot guard: phase-plane braking (limits how fast the error may
+      close, so the turn is eased off before the line is reached), corner
+      turn-rate cap, decaying + angle-budgeted momentum turn (turns back if
+      it overshoots), and extra damping right after the line is reacquired
     * 1 Hz debug log while tracking
 """
 
@@ -34,7 +38,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray
-import statistics
+
 
 class CameraPIDController(Node):
     def __init__(self):
@@ -44,25 +48,25 @@ class CameraPIDController(Node):
             self.declare_parameter(name, default)
             return self.get_parameter(name).value
 
-        self.kp = float(param("kp", 1.35))
+        self.kp = float(param("kp", 1.45))
         self.kp_nl = float(param("kp_nl", 0.90))
         self.ki = float(param("ki", 0.005))
         self.kd = float(param("kd", 0.055))
-        self.integral_limit = max(0.0, float(param("integral_limit", 0.35)))
+        self.integral_limit = max(0.0, float(param("integral_limit", 0.25)))
         self.i_zone = max(0.0, float(param("i_zone", 0.6)))
 
-        self.v_base = max(0.0, float(param("v_base", 0.15)))
+        self.v_base = max(0.0, float(param("v_base", 0.35)))
         self.v_min = max(0.0, min(self.v_base, float(param("v_min", 0.010))))
         self.max_w = max(0.0, float(param("max_w", 3.0)))
         self.max_w_rate = max(0.0, float(param("max_w_rate", 40.0)))
         self.max_v_accel = max(0.0, float(param("max_v_accel", 0.4)))
-        self.max_v_decel = max(0.0, float(param("max_v_decel", 1.5)))
+        self.max_v_decel = max(0.0, float(param("max_v_decel",2.0)))
 
-        self.error_slowdown = float(param("error_slowdown", 0.45))
+        self.error_slowdown = float(param("error_slowdown", 0.80))
         self.rate_slowdown = float(param("rate_slowdown", 0.15))
-        self.turn_slowdown = float(param("turn_slowdown", 0.40))
+        self.turn_slowdown = float(param("turn_slowdown", 0.70))
         self.corner_speed_scale = max(
-            0.1, min(1.0, float(param("corner_speed_scale", 0.50)))
+            0.1, min(1.0, float(param("corner_speed_scale", 0.25)))
         )
 
         self.sensor_timeout = max(0.05, float(param("sensor_timeout", 0.45)))
@@ -79,7 +83,23 @@ class CameraPIDController(Node):
             0.0, float(param("turn_latch_threshold", 0.4))
         )
         self.turn_lookahead_sec = max(0.0, float(param("turn_lookahead_sec", 0.15)))
-        self.corner_turn_sign = self.clamp(float(param("corner_turn_sign", 1.0)), -1.0, 1.0)
+        self.corner_turn_sign = self.clamp(float(param("corner_turn_sign", 0.0)), -1.0, 1.0)
+
+        # --- overshoot guard ---
+        self.overshoot_guard = bool(param("overshoot_guard", True))
+        self.brake_decel = max(0.1, float(param("brake_decel", 12.0)))      # rad/s^2 planned decel
+        self.error_to_angle = max(0.01, float(param("error_to_angle", 0.6)))  # rad per error unit
+        self.brake_floor_rate = max(0.0, float(param("brake_floor_rate", 0.15)))  # err/s allowed near 0
+        self.brake_gain = max(0.0, float(param("brake_gain", 1.0)))
+        self.corner_max_w = max(0.1, float(param("corner_max_w", 2.2)))    # turn-rate cap in status 2
+        self.momentum_decay_end = self.clamp(float(param("momentum_decay_end", 0.4)), 0.0, 1.0)
+        self.recovery_max_turn = max(0.0, float(param("recovery_max_turn", 1.3)))  # rad budget
+        self.reacquire_damp_sec = max(0.0, float(param("reacquire_damp_sec", 0.4)))
+        self.reacquire_kd_boost = max(1.0, float(param("reacquire_kd_boost", 2.0)))
+        self.recovery_yaw = 0.0
+        self.search_flip = False
+        self.reacquire_until = 0.0
+        self.last_brake_w = 0.0
 
         self.error = 0.0
         self.status = -1
@@ -110,10 +130,10 @@ class CameraPIDController(Node):
         self.timer = self.create_timer(0.02, self.control_loop)
 
         self.get_logger().info(
-            "Triangle caemra PID started: "
+            "Triangle camera PID started: "
             f"Kp={self.kp:.3f}, Kp_nl={self.kp_nl:.3f}, Ki={self.ki:.3f}, "
             f"Kd={self.kd:.3f}, v_base={self.v_base:.3f} m/s, "
-            f"max_w={self.max_w:.2f} rad/s, srarch={self.enable_search}."
+            f"max_w={self.max_w:.2f} rad/s, search={self.enable_search}."
         )
 
     @staticmethod
@@ -146,6 +166,7 @@ class CameraPIDController(Node):
         if self.corner_turn_sign != 0.0:
             return self.corner_turn_sign
         return self.turn_sign
+
     def set_phase(self, phase):
         if phase != self.phase:
             self.get_logger().info(
@@ -173,11 +194,28 @@ class CameraPIDController(Node):
         self.last_linear = max(0.0, result)
         return self.last_linear
 
-    def steering(self, error, integral, derivative):
+    def overshoot_brake(self, error):
+        """Phase-plane braking: if the error is closing faster than the robot
+        could decelerate to zero by the time it reaches error 0, return an
+        opposing angular.z so the turn eases off early instead of overshooting."""
+        if not self.overshoot_guard or abs(error) < 0.03:
+            return 0.0
+        sign_e = 1.0 if error > 0.0 else -1.0
+        closing = -sign_e * self.filtered_derivative
+        if closing <= 0.0:
+            return 0.0
+        a_e = self.brake_decel / self.error_to_angle
+        allowed = math.sqrt(2.0 * a_e * (abs(error) - 0.03)) + self.brake_floor_rate
+        excess = closing - allowed
+        if excess <= 0.0:
+            return 0.0
+        return sign_e * self.error_to_angle * excess * self.brake_gain
+
+    def steering(self, error, integral, derivative, kd_scale=1.0):
         """PID output as angular.z (positive error = line image-right
         -> negative angular.z steers right)."""
         p_term = self.kp * error + self.kp_nl * error * abs(error) / self.max_error
-        return -(p_term + self.ki * integral + self.kd * derivative)
+        return -(p_term + self.ki * integral + self.kd * kd_scale * derivative)
 
     def error_callback(self, msg):
         if len(msg.data) < 2:
@@ -293,7 +331,7 @@ class CameraPIDController(Node):
             self.stop()
             self.integral = 0.0
             self.set_phase("idle")
-            self.warn_throttled("Invalid detectr status; stopped.")
+            self.warn_throttled("Invalid detector status; stopped.")
             return
 
         if self.status in (1, 3):
@@ -304,17 +342,25 @@ class CameraPIDController(Node):
             self.publish_cmd(self.last_linear, self.last_angular)
             return
 
+        if self.phase in ("momentum", "search"):
+            self.reacquire_until = now + self.reacquire_damp_sec
+        self.recovery_yaw = 0.0
+        self.search_flip = False
         self.set_phase("tracking")
         self.track(now, dt)
 
     def track(self, now, dt):
         error = self.error
 
-        target_w = self.clamp(
-            self.steering(error, self.integral, self.filtered_derivative),
-            -self.max_w,
-            self.max_w,
-        )
+        kd_scale = self.reacquire_kd_boost if now < self.reacquire_until else 1.0
+        raw_w = self.steering(error, self.integral, self.filtered_derivative, kd_scale)
+        brake_w = self.overshoot_brake(error)
+        combined = raw_w + brake_w
+        if raw_w * combined < 0.0:  # braking may cancel the turn, never reverse it
+            combined = 0.0
+        self.last_brake_w = brake_w
+        w_cap = self.corner_max_w if self.status == 2 else self.max_w
+        target_w = self.clamp(combined, -w_cap, w_cap)
         angular = self.rate_limit_angular(target_w, dt)
 
         e_frac = min(abs(error) / self.max_error, 1.0)
@@ -340,7 +386,7 @@ class CameraPIDController(Node):
             self.get_logger().info(
                 f"status={self.status} error={error:+.3f} "
                 f"d={self.filtered_derivative:+.3f} i={self.integral:+.3f} "
-                f"v={linear:.3f} w={angular:+.3f}"
+                f"v={linear:.3f} w={angular:+.3f} brake={self.last_brake_w:+.3f}"
             )
             self.last_debug_log_time = now
 
@@ -361,16 +407,27 @@ class CameraPIDController(Node):
             )
             self.last_debug_log_time = now
 
-        if elapsed <= self.lost_grace_sec:
+        if (
+            self.overshoot_guard
+            and side != 0.0
+            and self.recovery_max_turn > 0.0
+            and self.recovery_yaw >= self.recovery_max_turn
+        ):
+            self.search_flip = True  # turned the full budget and still no line: go back
+
+        if elapsed <= self.lost_grace_sec and not self.search_flip:
             self.set_phase("momentum")
 
             if side != 0.0:
-                target_w = side * max(abs(self.last_angular), self.recovery_w)
+                frac = self.clamp(elapsed / max(self.lost_grace_sec, 1e-6), 0.0, 1.0)
+                decay = 1.0 - (1.0 - self.momentum_decay_end) * frac if self.overshoot_guard else 1.0
+                target_w = side * max(abs(self.last_angular), self.recovery_w) * decay
             else:
                 target_w = -self.kp * self.last_valid_error
 
             target_w = self.clamp(target_w, -self.max_w, self.max_w)
             angular = self.rate_limit_angular(target_w, dt)
+            self.recovery_yaw += angular * side * dt
             linear = self.rate_limit_linear(min(self.v_min, self.v_base * 0.25), dt)
             self.integral *= max(0.0, 1.0 - 4.0 * dt)
             self.publish_cmd(linear, angular)
@@ -382,8 +439,10 @@ class CameraPIDController(Node):
             and elapsed <= self.lost_grace_sec + self.search_timeout
         ):
             self.set_phase("search")
-            target_w = self.clamp(side * self.search_w, -self.max_w, self.max_w)
+            sdir = -side if self.search_flip else side
+            target_w = self.clamp(sdir * self.search_w, -self.max_w, self.max_w)
             angular = self.rate_limit_angular(target_w, dt)
+            self.recovery_yaw += angular * side * dt
             linear = self.rate_limit_linear(0.0, dt)
             self.publish_cmd(linear, angular)
             return
